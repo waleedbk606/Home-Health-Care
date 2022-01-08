@@ -1,16 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:hhc/Models/Users.dart';
 import 'package:hhc/Screens/Login.dart';
 
-class NavDrawer extends StatelessWidget {
+class NavDrawer extends StatefulWidget {
+  final User obj;
+  const NavDrawer({Key? key, required this.obj}) : super(key: key);
+
+  @override
+  _NavDrawerState createState() => _NavDrawerState();
+}
+
+class _NavDrawerState extends State<NavDrawer> {
+  late User object = widget.obj;
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
+          // FutureBuilder(
+          //     future: FlutterSession().get('token'),
+          //     builder: (context, snapshot) {
+          //       return Text(snapshot.hasData ? snapshot.data : 'loading...');
+          //     }),
           DrawerHeader(
             child: Text(
-              'User Name',
+              object.fname + " " + object.lname,
               style: TextStyle(color: Colors.tealAccent, fontSize: 25),
             ),
             decoration: BoxDecoration(

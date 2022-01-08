@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../Urls.dart';
+import 'Login.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class BookNow extends StatefulWidget {
   const BookNow({Key? key}) : super(key: key);
@@ -11,13 +15,72 @@ class _BookNowState extends State<BookNow> {
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
-  TextEditingController CnicController = TextEditingController();
-  TextEditingController DobController = TextEditingController();
   TextEditingController GenderController = TextEditingController();
-  TextEditingController BloodGroupController = TextEditingController();
   TextEditingController PhonenumController = TextEditingController();
-  TextEditingController EmailController = TextEditingController();
   TextEditingController AddressController = TextEditingController();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  void validate() {
+    if (_formkey.currentState!.validate()) {
+      print('ok');
+    }
+  }
+
+  Object? _value = 'user';
+  late bool error, sending, success;
+  late String msg;
+  String url = "http://${Url.ip}/HhcApi/api/Login/PatientDetails";
+  @override
+  void initState() {
+    error = false;
+    sending = false;
+    success = false;
+    super.initState();
+  }
+
+  Future<void> sendData() async {
+    var res = await http.post(
+      Uri.parse(url),
+      body: {
+        'Fname': FnameController.text,
+        'Lname': LnameController.text,
+        'Age': AgeController.text,
+        'Gender': GenderController.text,
+        'Phone': PhonenumController.text,
+        'Address': AddressController.text,
+        'Username': "wbk",
+      },
+    );
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body);
+      if (data["error"]) {
+        setState(() {
+          sending = false;
+          error = true;
+          msg = data["message"];
+        });
+      } else {
+        FnameController.text = '';
+        LnameController.text = '';
+        AgeController.text = '';
+        GenderController.text = '';
+        PhonenumController.text = '';
+        AddressController.text = '';
+        _value = '';
+
+        setState(() {
+          sending = false;
+          success = true;
+        });
+      }
+    } else {
+      setState(() {
+        error = true;
+        msg = "Error during sending data";
+        sending = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,50 +127,10 @@ class _BookNowState extends State<BookNow> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: CnicController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'CNIC',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: DobController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Date Of Birth',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
                   controller: GenderController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Gender',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: BloodGroupController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Blood Group',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: AddressController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Address',
                   ),
                 ),
               ),
@@ -124,37 +147,37 @@ class _BookNowState extends State<BookNow> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: EmailController,
+                  controller: AddressController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Address',
                   ),
                 ),
               ),
-              Container(
-                height: 60,
-                width: 120,
-                padding: EdgeInsets.all(10),
-                child: TextButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.blue),
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                  ),
-                  child: Text(
-                    ' Open Map',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () {
-                    // Navigator.push(context,
-                    //   MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                ),
-              ),
+              // Container(
+              //   height: 60,
+              //   width: 120,
+              //   padding: EdgeInsets.all(10),
+              //   child: TextButton(
+              //     style: ButtonStyle(
+              //       backgroundColor:
+              //           MaterialStateProperty.all<Color>(Colors.blue),
+              //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              //         RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(30.0),
+              //         ),
+              //       ),
+              //     ),
+              //     child: Text(
+              //       ' Open Map',
+              //       style: TextStyle(color: Colors.white),
+              //     ),
+              //     onPressed: () {
+              //       // Navigator.push(context,
+              //       //   MaterialPageRoute(builder: (context) => LoginPage()));
+              //     },
+              //   ),
+              // ),
               Container(
                 height: 60,
                 width: 200,
@@ -174,6 +197,7 @@ class _BookNowState extends State<BookNow> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
+                    sendData();
                     // Navigator.push(context,
                     //   MaterialPageRoute(builder: (context) => LoginPage()));
                   },

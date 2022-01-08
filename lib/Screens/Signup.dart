@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Login.dart';
+import '../Urls.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -13,14 +14,10 @@ class Signup extends StatefulWidget {
 class _SignupState extends State<Signup> {
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
-  TextEditingController AgeController = TextEditingController();
-  TextEditingController CnicController = TextEditingController();
   TextEditingController DobController = TextEditingController();
   TextEditingController GenderController = TextEditingController();
-  TextEditingController BloodGroupController = TextEditingController();
-  TextEditingController PhonenumController = TextEditingController();
   TextEditingController EmailController = TextEditingController();
-  TextEditingController AddressController = TextEditingController();
+  TextEditingController PhonenumController = TextEditingController();
   TextEditingController UsernameController = TextEditingController();
   TextEditingController PasswordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
@@ -33,8 +30,8 @@ class _SignupState extends State<Signup> {
   Object? _value = 'user';
   late bool error, sending, success;
   late String msg;
-  String urllog = "http://192.168.10.4/HhcApi/api/Login/AddLogin";
-  String url = "http://192.168.10.4/HhcApi/api/Login/AddRegister";
+  String urllog = "http://${Url.ip}/HhcApi/api/Login/AddLogin";
+  String url = "http://${Url.ip}/HhcApi/api/Login/AddRegister";
   @override
   void initState() {
     error = false;
@@ -49,14 +46,10 @@ class _SignupState extends State<Signup> {
       body: {
         'Fname': FnameController.text,
         'Lname': LnameController.text,
-        'Age': AgeController.text,
-        'Cnic': CnicController.text,
-        'Dob': DobController.text,
+        'DOB': DobController.text,
         'Gender': GenderController.text,
-        'BloodGroup': BloodGroupController.text,
-        'Phonenum': PhonenumController.text,
+        'Phone': PhonenumController.text,
         'Email': EmailController.text,
-        'Address': AddressController.text,
         'Username': UsernameController.text,
         'Password': PasswordController.text,
       },
@@ -73,14 +66,10 @@ class _SignupState extends State<Signup> {
       } else {
         FnameController.text = '';
         LnameController.text = '';
-        AgeController.text = '';
-        CnicController.text = '';
         DobController.text = '';
         GenderController.text = '';
-        BloodGroupController.text = '';
         PhonenumController.text = '';
         EmailController.text = '';
-        AddressController.text = '';
         UsernameController.text = '';
         PasswordController.text = '';
         _value = '';
@@ -105,7 +94,7 @@ class _SignupState extends State<Signup> {
       body: {
         'Username': UsernameController.text,
         'Password': PasswordController.text,
-        'Role': "Patient",
+        'Role': "User",
       },
     );
     if (res.statusCode == 200) {
@@ -119,24 +108,7 @@ class _SignupState extends State<Signup> {
             msg = data["message"];
           },
         );
-      } else {
-        UsernameController.text = '';
-        PasswordController.text = '';
-        _value = '';
-
-        setState(() {
-          sending = false;
-          success = true;
-        });
       }
-    } else {
-      setState(
-        () {
-          error = true;
-          msg = "Error during sending data";
-          sending = false;
-        },
-      );
     }
   }
 
@@ -175,26 +147,6 @@ class _SignupState extends State<Signup> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: AgeController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Age',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: CnicController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'CNIC',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
                   controller: DobController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
@@ -209,26 +161,6 @@ class _SignupState extends State<Signup> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Gender',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: BloodGroupController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Blood Group',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: AddressController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Address',
                   ),
                 ),
               ),

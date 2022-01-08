@@ -1,14 +1,16 @@
 import 'dart:convert';
 import "package:flutter/material.dart";
+import 'package:hhc/Models/Organization.dart';
+
+import 'package:hhc/Screens/AddEmp.dart';
 import 'package:hhc/Screens/AddOrg.dart';
-import 'package:hhc/Screens/DocDashboard.dart';
-import 'package:hhc/Screens/NurseDashbord.dart';
+import '../Urls.dart';
 import 'Home.dart';
 import 'OrgAdmin.dart';
 import 'Signup.dart';
-//import 'ViewNurse.dart';
 import 'hhcAdmin.dart';
 import 'package:http/http.dart' as http;
+
 //import 'package:hhc/ViewDoctors.dart';
 //import 'package:hhc/hhcAdmin.dart';
 
@@ -20,99 +22,113 @@ class LoginPage extends StatefulWidget {
 class _State extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController roleController = TextEditingController();
-  late String username, password;
+  List<String> locations = [
+    "Organization",
+    "Nurse",
+    "Physio",
+    "Vaccinator",
+    "General Physician",
+  ];
+  String selectedName = "Organization";
+  String Department = '';
+  late String username = usernameController.text;
+  late String password = passwordController.text;
   late bool error, sending, success;
   late String msg;
   late String role;
-  String url = "http://192.168.10.4/HhcApi/api/Login/verifylogin";
+  var OrgObj;
+  String url = "http://${Url.ip}/HhcApi/api/Login/verifylogin";
+
   @override
   void initState() {
     error = false;
     sending = false;
     success = false;
     super.initState();
+    // fetchUserDetails(username, password);
   }
 
   Future<void> verifylogin() async {
     var res = await http.post(Uri.parse(url), body: {
       'UserName': usernameController.text,
       'Password': passwordController.text,
-      //'Role': roleController.text,
     });
     if (res.statusCode == 200) {
       print(res.body);
       var data = json.decode(res.body);
+      //await FlutterSession().set('token', usernameController.text);
       role = data['Role'];
       print(role);
-      if (data['Role'] == 'Patient   ') {
+      if (role == 'User      ') {
         setState(() {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => hhcHome()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      hhcHome(username: username, password: password)));
         });
       }
       if (data['Role'] == 'AppAdmin  ') {
         setState(() {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => hhcAdmin()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => hhcAdmin(
+                        orgobj: OrgObj,
+                      )));
         });
       }
       if (data['Role'] == 'OrgAdmin  ') {
+        await fetchUserDetails(username, password);
         setState(() {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => OrgAdmin()));
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrgAdmin(OrgObj: OrgObj),
+            ),
+          );
         });
       }
-      if (data['Role'] == 'Doctor    ') {
-        setState(() {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => DocDashboard()));
-        });
-      }
-      if (data['Role'] == 'Nurse     ') {
-        setState(() {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => NurseDashboard()));
-        });
-      }
-      if (data['Role'] == 'Physio    ') {
-        setState(() {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-        });
-      }
-      if (data['Role'] == 'Vaccinator') {
-        setState(() {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-        });
-      }
-      if (data['Role'] == 'Vaccinator') {
-        setState(() {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-        });
-      }
-      if (data["error"]) {
-        setState(() {
-          sending = false;
-          error = true;
-          msg = data["message"];
-        });
-      } else {
-        usernameController.text = '';
-        passwordController.text = '';
-        setState(() {
-          sending = false;
-          success = true;
-        });
-      }
+      //   if (data['Role'] == 'Nurse     ') {
+      //     setState(() {
+      //       // Navigator.push(context,
+      //       //     MaterialPageRoute(builder: (context) => NurseDashboard()));
+      //     });
+      //   }
+      //   if (data['Role'] == 'Physio    ') {
+      //     setState(() {
+      //       Navigator.push(
+      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
+      //     });
+      //   }
+      //   if (data['Role'] == 'Vaccinator') {
+      //     setState(() {
+      //       Navigator.push(
+      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
+      //     });
+      //   }
+      //   if (data['Role'] == 'General Physician') {
+      //     setState(() {
+      //       Navigator.push(
+      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
+      //     });
+      //   }
     } else {
-      setState(() {
-        error = true;
-        msg = "Error during sending data";
-        sending = false;
-      });
+      print('faild To load ');
+    }
+  }
+
+  Future<Organization> fetchUserDetails(
+      String Username, String Password) async {
+    final response = await http.get(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/Login/GetOrgDetails?Username=${Username}&Password=${Password}'));
+    if (response.statusCode == 200) {
+      Organization paresd = OrganizationFromJson(response.body);
+      print(paresd.name);
+      OrgObj = paresd;
+      return paresd;
+    } else {
+      throw Exception('Failed to load album');
     }
   }
 
@@ -205,25 +221,119 @@ class _State extends State<LoginPage> {
                 "OR",
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w300,
                   color: Colors.black,
                 ),
               ),
               Container(
                 child: Row(
                   children: <Widget>[
-                    Text('Sign UP as Organization'),
-                    FlatButton(
-                      textColor: Colors.blue,
-                      child: Icon(
-                        Icons.add_business_outlined,
-                        size: 50,
+                    Text('Sign UP as '),
+                    // FlatButton(
+                    //   textColor: Colors.blue,
+                    //   child: Icon(
+                    //     Icons.add_business_outlined,
+                    //     size: 50,
+                    //   ),
+                    //   onPressed: () {
+                    //     Navigator.push(context,
+                    //         MaterialPageRoute(builder: (context) => AddOrg()));
+                    //   },
+                    // )
+                    Container(
+                      width: 150,
+                      height: 50,
+                      child: DropdownButton(
+                        autofocus: true,
+                        focusColor: Colors.white,
+                        isExpanded: true,
+                        hint: Text(
+                          'Organization',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 10,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        onChanged: (String? value) {
+                          setState(() {
+                            this.selectedName = value!;
+                            Department = selectedName;
+                            print(Department);
+                            if (Department == 'Organization') {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddOrg()));
+                              });
+                            }
+                            if (Department == 'Nurse') {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddEmp(
+                                              dep: Department,
+                                              org: "Independent",
+                                              obj: OrgObj,
+                                            )));
+                              });
+                            }
+                            if (Department == 'Physio') {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddEmp(
+                                              dep: Department,
+                                              org: "Independent",
+                                              obj: OrgObj,
+                                            )));
+                              });
+                            }
+                            if (Department == 'Vaccinator') {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddEmp(
+                                              dep: Department,
+                                              org: "Independent",
+                                              obj: OrgObj,
+                                            )));
+                              });
+                            }
+                            if (Department == 'General Physician') {
+                              setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AddEmp(
+                                              dep: Department,
+                                              org: "Independent",
+                                              obj: OrgObj,
+                                            )));
+                              });
+                            }
+                          });
+                        },
+                        value: selectedName,
+                        items: locations.map((item) {
+                          return DropdownMenuItem(
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            value: item,
+                          );
+                        }).toList(),
+                        dropdownColor: Colors.white,
                       ),
-                      onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => AddOrg()));
-                      },
-                    )
+                    ),
                   ],
                   mainAxisAlignment: MainAxisAlignment.center,
                 ),

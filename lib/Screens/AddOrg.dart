@@ -3,6 +3,8 @@ import 'package:hhc/Screens/Login.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../Urls.dart';
+
 showAlertDialog(BuildContext context) {
   // Create button
   Widget okButton = FlatButton(
@@ -35,6 +37,7 @@ showAlertDialog(BuildContext context) {
 
   // show the dialog
   showDialog(
+    barrierDismissible: false,
     context: context,
     builder: (BuildContext context) {
       return alert;
@@ -67,11 +70,10 @@ class _AddOrgState extends State<AddOrg> {
     }
   }
 
-  Object? _value = 'user';
   late bool error, sending, success;
   late String msg;
-  String urllog = "http://192.168.10.4/HhcApi/api/Login/AddLogin";
-  String url = "http://192.168.10.4/HhcApi/api/Login/AddOrg";
+  String urllog = "http://${Url.ip}/HhcApi/api/Login/AddLogin";
+  String url = "http://${Url.ip}/HhcApi/api/Login/AddOrg";
   @override
   void initState() {
     error = false;
@@ -115,7 +117,6 @@ class _AddOrgState extends State<AddOrg> {
         DiscriptionController.text = '';
         UsernameController.text = '';
         PasswordController.text = '';
-        _value = '';
 
         setState(() {
           sending = false;
@@ -128,47 +129,6 @@ class _AddOrgState extends State<AddOrg> {
         msg = "Error during sending data";
         sending = false;
       });
-    }
-  }
-
-  Future<void> sendlogin() async {
-    var res = await http.post(
-      Uri.parse(urllog),
-      body: {
-        'Username': UsernameController.text,
-        'Password': PasswordController.text,
-        'Role': "OrgAdmin  ",
-      },
-    );
-    if (res.statusCode == 200) {
-      print(res.body);
-      var data = json.decode(res.body);
-      if (data["error"]) {
-        setState(
-          () {
-            sending = false;
-            error = true;
-            msg = data["message"];
-          },
-        );
-      } else {
-        UsernameController.text = '';
-        PasswordController.text = '';
-        _value = '';
-
-        setState(() {
-          sending = false;
-          success = true;
-        });
-      }
-    } else {
-      setState(
-        () {
-          error = true;
-          msg = "Error during sending data";
-          sending = false;
-        },
-      );
     }
   }
 
@@ -294,7 +254,6 @@ class _AddOrgState extends State<AddOrg> {
                   ),
                   onPressed: () {
                     sendData();
-                    sendlogin();
                     showAlertDialog(context);
                   },
                 ),
