@@ -342,36 +342,62 @@ class _OrgAdminState extends State<OrgAdmin> {
                                                     SizedBox(
                                                       height: 3,
                                                     ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Gender:  ",
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          snapshot.data![index]
-                                                              .gender,
-                                                          textAlign:
-                                                              TextAlign.right,
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            //fontWeight: FontWeight.w500,
-                                                            //color: Colors.teal,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     Text(
+                                                    //       "Gender:  ",
+                                                    //       style: TextStyle(
+                                                    //         fontSize: 15,
+                                                    //         fontWeight:
+                                                    //             FontWeight.w400,
+                                                    //       ),
+                                                    //     ),
+                                                    //     Text(
+                                                    //       snapshot.data![index]
+                                                    //           .gender,
+                                                    //       textAlign:
+                                                    //           TextAlign.right,
+                                                    //       style: TextStyle(
+                                                    //         fontSize: 15,
+                                                    //         //fontWeight: FontWeight.w500,
+                                                    //         //color: Colors.teal,
+                                                    //       ),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
+                                                    // SizedBox(
+                                                    //   height: 3,
+                                                    // ),
+                                                    // Row(
+                                                    //   children: [
+                                                    //     Text(
+                                                    //       "Qulification:  ",
+                                                    //       style: TextStyle(
+                                                    //         fontSize: 15,
+                                                    //         fontWeight:
+                                                    //             FontWeight.w400,
+                                                    //       ),
+                                                    //     ),
+                                                    //     Text(
+                                                    //       snapshot.data![index]
+                                                    //           .qualification,
+                                                    //       textAlign:
+                                                    //           TextAlign.right,
+                                                    //       style: TextStyle(
+                                                    //         fontSize: 15,
+                                                    //         //fontWeight: FontWeight.w500,
+                                                    //         //color: Colors.teal,
+                                                    //       ),
+                                                    //     ),
+                                                    //   ],
+                                                    // ),
                                                     SizedBox(
                                                       height: 3,
                                                     ),
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          "Qulification:  ",
+                                                          "Email:  ",
                                                           style: TextStyle(
                                                             fontSize: 15,
                                                             fontWeight:
@@ -380,33 +406,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                                                         ),
                                                         Text(
                                                           snapshot.data![index]
-                                                              .qualification,
-                                                          textAlign:
-                                                              TextAlign.right,
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            //fontWeight: FontWeight.w500,
-                                                            //color: Colors.teal,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    SizedBox(
-                                                      height: 3,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text(
-                                                          "Phone:  ",
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          snapshot.data![index]
-                                                              .phone,
+                                                              .email,
                                                           textAlign:
                                                               TextAlign.right,
                                                           style: TextStyle(
@@ -429,78 +429,78 @@ class _OrgAdminState extends State<OrgAdmin> {
                                                     SizedBox(
                                                       width: 30,
                                                     ),
-                                                    Container(
-                                                      height: 30,
-                                                      width: 60,
-                                                      child: TextButton(
-                                                        style: ButtonStyle(
-                                                          backgroundColor:
-                                                              MaterialStateProperty
-                                                                  .all<Color>(
-                                                                      Colors
-                                                                          .blue),
-                                                          shape: MaterialStateProperty
-                                                              .all<
-                                                                  RoundedRectangleBorder>(
-                                                            RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          30.0),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(
-                                                              Icons
-                                                                  .manage_accounts_rounded,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 10,
-                                                            ),
-                                                            Text(
-                                                              "Update",
-                                                              style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        onPressed: () {
-                                                          eid = snapshot
-                                                              .data![index].eid;
-                                                          print(eid);
-                                                          if (eid != null) {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        UpdateEmp(
-                                                                  id: eid,
-                                                                  OrgName: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .orgName,
-                                                                  Department: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .department,
-                                                                  Status: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .status,
-                                                                  obj: obj,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      ),
-                                                    ),
+                                                    // Container(
+                                                    //   height: 30,
+                                                    //   width: 60,
+                                                    //   child: TextButton(
+                                                    //     style: ButtonStyle(
+                                                    //       backgroundColor:
+                                                    //           MaterialStateProperty
+                                                    //               .all<Color>(
+                                                    //                   Colors
+                                                    //                       .blue),
+                                                    //       shape: MaterialStateProperty
+                                                    //           .all<
+                                                    //               RoundedRectangleBorder>(
+                                                    //         RoundedRectangleBorder(
+                                                    //           borderRadius:
+                                                    //               BorderRadius
+                                                    //                   .circular(
+                                                    //                       30.0),
+                                                    //         ),
+                                                    //       ),
+                                                    //     ),
+                                                    //     child: Row(
+                                                    //       children: [
+                                                    //         Icon(
+                                                    //           Icons
+                                                    //               .manage_accounts_rounded,
+                                                    //           color:
+                                                    //               Colors.white,
+                                                    //           size: 10,
+                                                    //         ),
+                                                    //         Text(
+                                                    //           "Update",
+                                                    //           style: TextStyle(
+                                                    //             fontSize: 10,
+                                                    //             color: Colors
+                                                    //                 .white,
+                                                    //           ),
+                                                    //         ),
+                                                    //       ],
+                                                    //     ),
+                                                    //     onPressed: () {
+                                                    //       eid = snapshot
+                                                    //           .data![index].eid;
+                                                    //       print(eid);
+                                                    //       if (eid != null) {
+                                                    //         Navigator.push(
+                                                    //           context,
+                                                    //           MaterialPageRoute(
+                                                    //             builder:
+                                                    //                 (context) =>
+                                                    //                     UpdateEmp(
+                                                    //               id: eid,
+                                                    //               OrgName: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .orgName,
+                                                    //               Department: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .department,
+                                                    //               Status: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .status,
+                                                    //               obj: obj,
+                                                    //             ),
+                                                    //           ),
+                                                    //         );
+                                                    //       }
+                                                    //     },
+                                                    //   ),
+                                                    // ),
                                                     SizedBox(
                                                       height: 30,
                                                     ),

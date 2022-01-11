@@ -1,18 +1,16 @@
 import 'dart:convert';
 import "package:flutter/material.dart";
+import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
-
 import 'package:hhc/Screens/AddEmp.dart';
 import 'package:hhc/Screens/AddOrg.dart';
+import 'package:hhc/Screens/Employee.dart';
 import '../Urls.dart';
 import 'Home.dart';
 import 'OrgAdmin.dart';
 import 'Signup.dart';
 import 'hhcAdmin.dart';
 import 'package:http/http.dart' as http;
-
-//import 'package:hhc/ViewDoctors.dart';
-//import 'package:hhc/hhcAdmin.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -36,7 +34,8 @@ class _State extends State<LoginPage> {
   late bool error, sending, success;
   late String msg;
   late String role;
-  var OrgObj;
+  var OrgObj = null;
+  var empobj = null;
   String url = "http://${Url.ip}/HhcApi/api/Login/verifylogin";
 
   @override
@@ -46,76 +45,6 @@ class _State extends State<LoginPage> {
     success = false;
     super.initState();
     // fetchUserDetails(username, password);
-  }
-
-  Future<void> verifylogin() async {
-    var res = await http.post(Uri.parse(url), body: {
-      'UserName': usernameController.text,
-      'Password': passwordController.text,
-    });
-    if (res.statusCode == 200) {
-      print(res.body);
-      var data = json.decode(res.body);
-      //await FlutterSession().set('token', usernameController.text);
-      role = data['Role'];
-      print(role);
-      if (role == 'User      ') {
-        setState(() {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      hhcHome(username: username, password: password)));
-        });
-      }
-      if (data['Role'] == 'AppAdmin  ') {
-        setState(() {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => hhcAdmin(
-                        orgobj: OrgObj,
-                      )));
-        });
-      }
-      if (data['Role'] == 'OrgAdmin  ') {
-        await fetchUserDetails(username, password);
-        setState(() {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OrgAdmin(OrgObj: OrgObj),
-            ),
-          );
-        });
-      }
-      //   if (data['Role'] == 'Nurse     ') {
-      //     setState(() {
-      //       // Navigator.push(context,
-      //       //     MaterialPageRoute(builder: (context) => NurseDashboard()));
-      //     });
-      //   }
-      //   if (data['Role'] == 'Physio    ') {
-      //     setState(() {
-      //       Navigator.push(
-      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-      //     });
-      //   }
-      //   if (data['Role'] == 'Vaccinator') {
-      //     setState(() {
-      //       Navigator.push(
-      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-      //     });
-      //   }
-      //   if (data['Role'] == 'General Physician') {
-      //     setState(() {
-      //       Navigator.push(
-      //           context, MaterialPageRoute(builder: (context) => hhcAdmin()));
-      //     });
-      //   }
-    } else {
-      print('faild To load ');
-    }
   }
 
   Future<Organization> fetchUserDetails(
@@ -132,6 +61,85 @@ class _State extends State<LoginPage> {
     }
   }
 
+  Future<Employee> fetchEmpDetails(String Username, String Password) async {
+    final response = await http.get(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/Login/GetEmpByUsername?Username=${Username}&Password=${Password}'));
+    if (response.statusCode == 200) {
+      Employee paresd = EmpFromJson(response.body);
+      setState(() {
+        empobj = paresd;
+      });
+      print(paresd.fname);
+      return paresd;
+    } else {
+      throw Exception('Failed to load album');
+    }
+  }
+
+  Future<void> verifylogin() async {
+    var res = await http.post(Uri.parse(url), body: {
+      'UserName': usernameController.text,
+      'Password': passwordController.text,
+    });
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body);
+      //await FlutterSession().set('token', usernameController.text);
+      role = data['Role'];
+      print(role);
+      if (role == 'User      ') {
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  hhcHome(username: username, password: password),
+            ),
+          );
+        });
+      }
+      if (data['Role'] == 'AppAdmin  ') {
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => hhcAdmin(
+                orgobj: OrgObj,
+              ),
+            ),
+          );
+        });
+      }
+      if (data['Role'] == 'OrgAdmin  ') {
+        await fetchUserDetails(username, password);
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrgAdmin(OrgObj: OrgObj),
+            ),
+          );
+        });
+      }
+      if (data['Role'] == 'Employee  ') {
+        await fetchEmpDetails(username, password);
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EmployeeHome(
+                obj: empobj,
+              ),
+            ),
+          );
+        });
+      }
+    } else {
+      print('faild To load ');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -209,8 +217,12 @@ class _State extends State<LoginPage> {
                         style: TextStyle(fontSize: 20),
                       ),
                       onPressed: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Signup()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Signup(
+                                      OrgObj: OrgObj,
+                                    )));
                       },
                     )
                   ],

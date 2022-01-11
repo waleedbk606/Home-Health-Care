@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/Login.dart';
 import 'package:hhc/Screens/OrgAdmin.dart';
@@ -25,13 +26,7 @@ class _AddEmpState extends State<AddEmp> {
   late Organization obj = widget.obj;
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
-  TextEditingController AgeController = TextEditingController();
-  TextEditingController CNICController = TextEditingController();
-  TextEditingController GenderController = TextEditingController();
-  TextEditingController PhoneController = TextEditingController();
   TextEditingController EmailController = TextEditingController();
-  TextEditingController QualificationController = TextEditingController();
-  TextEditingController ExperienceController = TextEditingController();
   TextEditingController UsernameController = TextEditingController();
   TextEditingController PasswordController = TextEditingController();
   TextEditingController OrgNameController = TextEditingController();
@@ -46,6 +41,7 @@ class _AddEmpState extends State<AddEmp> {
   Object? _value = 'user';
   late bool error, sending, success;
   late String msg;
+  Employee edata = null as Employee;
 
   String url = "http://${Url.ip}/HhcApi/api/Login/AddEmployee";
 
@@ -58,70 +54,29 @@ class _AddEmpState extends State<AddEmp> {
   }
 
   Future<void> sendData() async {
-    if (widget.org == "Independent") {
-      var res = await http.post(
-        Uri.parse(url),
-        body: {
-          'Oid': "8010",
-          'Fname': FnameController.text,
-          'Lname': LnameController.text,
-          'Age': AgeController.text,
-          'CNIC': CNICController.text,
-          'Gender': GenderController.text,
-          'Phone': PhoneController.text,
-          'Email': EmailController.text,
-          'Qualification': QualificationController.text,
-          'Experience': ExperienceController.text,
-          'Department': widget.dep,
-          'OrgName': widget.org,
-          'Username': UsernameController.text,
-          'Password': PasswordController.text,
-          'Status': "Pending",
-        },
-      );
+    var res = await http.post(
+      Uri.parse(url),
+      body: {
+        'Fname': FnameController.text,
+        'Lname': LnameController.text,
+        'Email': EmailController.text,
+        'Department': widget.dep,
+        'OrgName': widget.org,
+        'Username': UsernameController.text,
+        'Password': PasswordController.text,
+        'Status': "Details Required",
+      },
+    );
 
-      if (res.statusCode == 200) {
-        print(res.body);
-        var data = json.decode(res.body);
-        if (data["error"]) {
-          setState(() {
-            sending = false;
-            error = true;
-            msg = data["message"];
-          });
-        }
-      }
-    } else {
-      var res = await http.post(
-        Uri.parse(url),
-        body: {
-          'Fname': FnameController.text,
-          'Lname': LnameController.text,
-          'Age': AgeController.text,
-          'CNIC': CNICController.text,
-          'Gender': GenderController.text,
-          'Phone': PhoneController.text,
-          'Email': EmailController.text,
-          'Qualification': QualificationController.text,
-          'Experience': ExperienceController.text,
-          'Department': widget.dep,
-          'OrgName': widget.org,
-          'Username': UsernameController.text,
-          'Password': PasswordController.text,
-          'Status': "Accepted",
-        },
-      );
-
-      if (res.statusCode == 200) {
-        print(res.body);
-        var data = json.decode(res.body);
-        if (data["error"]) {
-          setState(() {
-            sending = false;
-            error = true;
-            msg = data["message"];
-          });
-        }
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body);
+      if (data["error"]) {
+        setState(() {
+          sending = false;
+          error = true;
+          msg = data["message"];
+        });
       }
     }
   }
@@ -134,7 +89,48 @@ class _AddEmpState extends State<AddEmp> {
       body: {
         'Username': UsernameController.text,
         'Password': PasswordController.text,
-        'Role': widget.dep,
+        'Role': "Employee",
+      },
+    );
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body);
+      print(data);
+    } else {
+      setState(
+        () {
+          error = true;
+          msg = "Error during sending data";
+          sending = false;
+        },
+      );
+    }
+  }
+
+  // Future<Employee> fetchorg() async {
+  //   final response = await http.get(Uri.parse(
+  //       'http://${Url.ip}/HhcApi/api/Login/GetEmpByUsername?Username=${UsernameController.text}&Password=${PasswordController.text}'));
+  //   if (response.statusCode == 200) {
+  //     Employee paresd = EmployeeFromJson(response.body);
+  //     edata = paresd;
+  //     return paresd;
+  //   } else {
+  //     throw Exception('Failed to load album');
+  //   }
+  // }
+
+  Future<void> sendSchedule(Employee edata) async {
+    var res = await http.post(
+      Uri.parse(urllog),
+      body: {
+        "eid": edata.eid,
+        "fname": edata.fname,
+        "lname": edata.lname,
+        "orgname": edata.orgName,
+        "dep": edata.department,
+        "shift": 'Morning',
+        "noOfpndApnt": '0',
+        "ratings": '0',
       },
     );
     if (res.statusCode == 200) {
@@ -186,70 +182,10 @@ class _AddEmpState extends State<AddEmp> {
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
-                  controller: AgeController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Age',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: GenderController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Gender',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: CNICController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'CNIC',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: PhoneController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Phone#',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
                   controller: EmailController,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: QualificationController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Qualification',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: ExperienceController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Experience',
                   ),
                 ),
               ),
@@ -294,7 +230,7 @@ class _AddEmpState extends State<AddEmp> {
                   onPressed: () {
                     sendData();
                     sendlogin();
-                    //showAlertDialog(context);
+                    // sendSchedule(edata);
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(

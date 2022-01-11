@@ -369,78 +369,78 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                     SizedBox(
                                                       width: 30,
                                                     ),
-                                                    Container(
-                                                      height: 30,
-                                                      width: 60,
-                                                      child: TextButton(
-                                                        style: ButtonStyle(
-                                                          backgroundColor:
-                                                              MaterialStateProperty
-                                                                  .all<Color>(
-                                                                      Colors
-                                                                          .blue),
-                                                          shape: MaterialStateProperty
-                                                              .all<
-                                                                  RoundedRectangleBorder>(
-                                                            RoundedRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          30.0),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: Row(
-                                                          children: [
-                                                            Icon(
-                                                              Icons
-                                                                  .manage_accounts_rounded,
-                                                              color:
-                                                                  Colors.white,
-                                                              size: 10,
-                                                            ),
-                                                            Text(
-                                                              "Update",
-                                                              style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Colors
-                                                                    .white,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        onPressed: () {
-                                                          eid = snapshot
-                                                              .data![index].eid;
-                                                          print(eid);
-                                                          if (eid != null) {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        UpdateEmp(
-                                                                  id: eid,
-                                                                  OrgName: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .orgName,
-                                                                  Department: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .department,
-                                                                  Status: snapshot
-                                                                      .data![
-                                                                          index]
-                                                                      .status,
-                                                                  obj: orgobj,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                      ),
-                                                    ),
+                                                    // Container(
+                                                    //   height: 30,
+                                                    //   width: 60,
+                                                    //   child: TextButton(
+                                                    //     style: ButtonStyle(
+                                                    //       backgroundColor:
+                                                    //           MaterialStateProperty
+                                                    //               .all<Color>(
+                                                    //                   Colors
+                                                    //                       .blue),
+                                                    //       shape: MaterialStateProperty
+                                                    //           .all<
+                                                    //               RoundedRectangleBorder>(
+                                                    //         RoundedRectangleBorder(
+                                                    //           borderRadius:
+                                                    //               BorderRadius
+                                                    //                   .circular(
+                                                    //                       30.0),
+                                                    //         ),
+                                                    //       ),
+                                                    //     ),
+                                                    //     child: Row(
+                                                    //       children: [
+                                                    //         Icon(
+                                                    //           Icons
+                                                    //               .manage_accounts_rounded,
+                                                    //           color:
+                                                    //               Colors.white,
+                                                    //           size: 10,
+                                                    //         ),
+                                                    //         Text(
+                                                    //           "Update",
+                                                    //           style: TextStyle(
+                                                    //             fontSize: 10,
+                                                    //             color: Colors
+                                                    //                 .white,
+                                                    //           ),
+                                                    //         ),
+                                                    //       ],
+                                                    //     ),
+                                                    //     onPressed: () {
+                                                    //       eid = snapshot
+                                                    //           .data![index].eid;
+                                                    //       print(eid);
+                                                    //       if (eid != null) {
+                                                    //         Navigator.push(
+                                                    //           context,
+                                                    //           MaterialPageRoute(
+                                                    //             builder:
+                                                    //                 (context) =>
+                                                    //                     UpdateEmp(
+                                                    //               id: eid,
+                                                    //               OrgName: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .orgName,
+                                                    //               Department: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .department,
+                                                    //               Status: snapshot
+                                                    //                   .data![
+                                                    //                       index]
+                                                    //                   .status,
+                                                    //               obj: orgobj,
+                                                    //             ),
+                                                    //           ),
+                                                    //         );
+                                                    //       }
+                                                    //     },
+                                                    //   ),
+                                                    // ),
                                                     SizedBox(
                                                       height: 30,
                                                     ),

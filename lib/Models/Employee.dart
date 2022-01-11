@@ -10,6 +10,10 @@ List<Employee> employeeFromJson(String str) =>
 String employeeToJson(List<Employee> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
+Employee EmpFromJson(String str) => Employee.fromJson(json.decode(str));
+
+String EmpToJson(Employee data) => json.encode(data.toJson());
+
 class Employee {
   Employee({
     required this.eid,
@@ -27,6 +31,8 @@ class Employee {
     required this.orgName,
     required this.department,
     required this.status,
+    required this.nofComApm,
+    required this.raitings,
   });
 
   int eid;
@@ -44,6 +50,8 @@ class Employee {
   String orgName;
   String department;
   String status;
+  int nofComApm;
+  int raitings;
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
         eid: json["eid"],
@@ -61,6 +69,8 @@ class Employee {
         orgName: json["OrgName"],
         department: json["Department"],
         status: json["Status"],
+        nofComApm: json["NofComApm"] == null ? null : json["NofComApm"],
+        raitings: json["Raitings"] == null ? null : json["Raitings"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -79,5 +89,7 @@ class Employee {
         "OrgName": orgName,
         "Department": department,
         "Status": status,
+        "NofComApm": nofComApm == null ? null : nofComApm,
+        "Raitings": raitings == null ? null : raitings,
       };
 }

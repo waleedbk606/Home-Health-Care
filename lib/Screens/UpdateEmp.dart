@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
+import 'package:hhc/Screens/Employee.dart';
 import 'package:hhc/Screens/OrgAdmin.dart';
 import 'package:hhc/Urls.dart';
 import 'dart:async';
@@ -102,26 +103,15 @@ class org {
 }
 
 class UpdateEmp extends StatefulWidget {
-  final int id;
-  final String OrgName;
-  final String Department;
-  final String Status;
-  final Organization obj;
-  const UpdateEmp(
-      {Key? key,
-      required this.id,
-      required this.OrgName,
-      required this.Department,
-      required this.Status,
-      required this.obj})
-      : super(key: key);
+  final Employee obj;
+  const UpdateEmp({Key? key, required this.obj}) : super(key: key);
 
   @override
   _UpdateEmpState createState() => _UpdateEmpState();
 }
 
 class _UpdateEmpState extends State<UpdateEmp> {
-  late Organization obj = widget.obj;
+  late Employee obj = widget.obj;
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
@@ -151,7 +141,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
     sending = false;
     success = false;
     super.initState();
-    futureorg = fetchorg(widget.id);
+    futureorg = fetchorg(obj.eid);
   }
 
   Future<List<Employee>> fetchorg(int id) async {
@@ -171,7 +161,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
     var res = await http.post(
       Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
       body: {
-        'eid': widget.id.toString(),
+        'eid': obj.eid,
         'Fname': FnameController.text,
         'Lname': LnameController.text,
         'Age': AgeController.text,
@@ -183,9 +173,9 @@ class _UpdateEmpState extends State<UpdateEmp> {
         'Experience': ExperienceController.text,
         'Username': UsernameController.text,
         'Password': PasswordController.text,
-        'OrgName': widget.OrgName,
-        'Department': widget.Department,
-        'Status': widget.Status,
+        'OrgName': obj.orgName,
+        'Department': obj.department,
+        'Status': obj.status,
       },
     );
     if (res.statusCode == 200) {
@@ -395,11 +385,13 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                 setState(
                                   () {
                                     Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => OrgAdmin(
-                                                  OrgObj: obj,
-                                                )));
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EmployeeHome(
+                                          obj: obj,
+                                        ),
+                                      ),
+                                    );
                                   },
                                 );
                               },

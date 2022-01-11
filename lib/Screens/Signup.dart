@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hhc/Models/Organization.dart';
+import 'package:hhc/Screens/AddOrg.dart';
+import 'AddEmp.dart';
 import 'Login.dart';
 import '../Urls.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Signup extends StatefulWidget {
-  const Signup({Key? key}) : super(key: key);
+  final Organization OrgObj;
+
+  const Signup({Key? key, required this.OrgObj}) : super(key: key);
 
   @override
   _SignupState createState() => _SignupState();
@@ -21,6 +26,7 @@ class _SignupState extends State<Signup> {
   TextEditingController UsernameController = TextEditingController();
   TextEditingController PasswordController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
   void validate() {
     if (_formkey.currentState!.validate()) {
       print('ok');
@@ -30,8 +36,20 @@ class _SignupState extends State<Signup> {
   Object? _value = 'user';
   late bool error, sending, success;
   late String msg;
+  String selectedName = "User";
+  List<String> locations = [
+    "User",
+    "Nurse",
+    "Physio",
+    "Vaccinator",
+    "General Physician",
+    "Organization",
+  ];
+  String OrgCheck = "";
   String urllog = "http://${Url.ip}/HhcApi/api/Login/AddLogin";
   String url = "http://${Url.ip}/HhcApi/api/Login/AddRegister";
+  String urlemp = "http://${Url.ip}/HhcApi/api/Login/AddEmployee";
+
   @override
   void initState() {
     error = false;
@@ -46,9 +64,6 @@ class _SignupState extends State<Signup> {
       body: {
         'Fname': FnameController.text,
         'Lname': LnameController.text,
-        'DOB': DobController.text,
-        'Gender': GenderController.text,
-        'Phone': PhonenumController.text,
         'Email': EmailController.text,
         'Username': UsernameController.text,
         'Password': PasswordController.text,
@@ -66,9 +81,6 @@ class _SignupState extends State<Signup> {
       } else {
         FnameController.text = '';
         LnameController.text = '';
-        DobController.text = '';
-        GenderController.text = '';
-        PhonenumController.text = '';
         EmailController.text = '';
         UsernameController.text = '';
         PasswordController.text = '';
@@ -89,25 +101,72 @@ class _SignupState extends State<Signup> {
   }
 
   Future<void> sendlogin() async {
-    var res = await http.post(
-      Uri.parse(urllog),
-      body: {
-        'Username': UsernameController.text,
-        'Password': PasswordController.text,
-        'Role': "User",
-      },
-    );
-    if (res.statusCode == 200) {
-      print(res.body);
-      var data = json.decode(res.body);
-      if (data["error"]) {
-        setState(
-          () {
-            sending = false;
-            error = true;
-            msg = data["message"];
-          },
-        );
+    if (OrgCheck == "User") {
+      var res = await http.post(
+        Uri.parse(urllog),
+        body: {
+          'Username': UsernameController.text,
+          'Password': PasswordController.text,
+          'Role': "User",
+        },
+      );
+      if (res.statusCode == 200) {
+        print(res.body);
+        var data = json.decode(res.body);
+        if (data["error"]) {
+          setState(
+            () {
+              sending = false;
+              error = true;
+              msg = data["message"];
+            },
+          );
+        }
+      }
+    }
+    if (OrgCheck == "Organization") {
+      var res = await http.post(
+        Uri.parse(urllog),
+        body: {
+          'Username': UsernameController.text,
+          'Password': PasswordController.text,
+          'Role': "OrgAdmin",
+        },
+      );
+      if (res.statusCode == 200) {
+        print(res.body);
+        var data = json.decode(res.body);
+        if (data["error"]) {
+          setState(
+            () {
+              sending = false;
+              error = true;
+              msg = data["message"];
+            },
+          );
+        }
+      }
+    } else {
+      var res = await http.post(
+        Uri.parse(urllog),
+        body: {
+          'Username': UsernameController.text,
+          'Password': PasswordController.text,
+          'Role': "Employee",
+        },
+      );
+      if (res.statusCode == 200) {
+        print(res.body);
+        var data = json.decode(res.body);
+        if (data["error"]) {
+          setState(
+            () {
+              sending = false;
+              error = true;
+              msg = data["message"];
+            },
+          );
+        }
       }
     }
   }
@@ -124,6 +183,55 @@ class _SignupState extends State<Signup> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Row(
+                children: [
+                  Text(
+                    "Sign Up as:",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  Container(
+                    width: 200,
+                    height: 50,
+                    child: DropdownButton(
+                      autofocus: true,
+                      focusColor: Colors.white,
+                      isExpanded: true,
+                      onChanged: (String? value) {
+                        setState(
+                          () {
+                            this.selectedName = value!;
+                            OrgCheck = selectedName;
+                            print(OrgCheck);
+                            if (OrgCheck == "Organization") {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddOrg()));
+                            }
+                          },
+                        );
+                      },
+                      value: selectedName,
+                      items: locations.map((item) {
+                        return DropdownMenuItem(
+                          child: Text(
+                            item,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.lightBlueAccent,
+                            ),
+                          ),
+                          value: item,
+                        );
+                      }).toList(),
+                      dropdownColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
@@ -141,36 +249,6 @@ class _SignupState extends State<Signup> {
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Last Name',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: DobController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Date Of Birth',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: GenderController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Gender',
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: PhonenumController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Phone#',
                   ),
                 ),
               ),
@@ -223,10 +301,19 @@ class _SignupState extends State<Signup> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    sendData();
-                    sendlogin();
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
+                    if (OrgCheck == "User") {
+                      sendData();
+                      sendlogin();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    } else if (OrgCheck == "Organization") {
+                      print("Please reselect something from dropdown");
+                    } else {
+                      EmployeeSignUp();
+                      sendlogin();
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    }
                   },
                 ),
               ),
@@ -256,5 +343,34 @@ class _SignupState extends State<Signup> {
         ),
       ),
     );
+  }
+
+  Future<void> EmployeeSignUp() async {
+    var res = await http.post(
+      Uri.parse(urlemp),
+      body: {
+        'Oid': "8010",
+        'Fname': FnameController.text,
+        'Lname': LnameController.text,
+        'Email': EmailController.text,
+        'Department': OrgCheck.toString(),
+        'OrgName': "Independent",
+        'Username': UsernameController.text,
+        'Password': PasswordController.text,
+        'Status': "Details Required",
+      },
+    );
+
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body);
+      if (data["error"]) {
+        setState(() {
+          sending = false;
+          error = true;
+          msg = data["message"];
+        });
+      }
+    }
   }
 }
