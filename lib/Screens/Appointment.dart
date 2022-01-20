@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hhc/Models/Users.dart';
 import 'package:hhc/Screens/Home.dart';
 import '../Urls.dart';
 import 'dart:convert';
@@ -7,13 +8,16 @@ import 'package:http/http.dart' as http;
 
 class Appointment extends StatefulWidget {
   final String service;
-  final String username;
-  final String OnsRep;
+  final User userObj;
+  final String org;
+  final String dep;
+
   const Appointment(
       {Key? key,
       required this.service,
-      required this.username,
-      required this.OnsRep})
+      required this.userObj,
+      required this.org,
+      required this.dep})
       : super(key: key);
 
   @override
@@ -26,12 +30,25 @@ class _AppointmentState extends State<Appointment> {
   DateTime SelectedDate = DateTime.now();
   TimeOfDay SelectedTime = TimeOfDay.now();
   String selectedgender = 'Male';
+  String Shift = 'Morning';
+  List<String> timeslot = [
+    '6am-9am',
+    '9am-12pm',
+    '12pm-3pm',
+    '3pm-6pm',
+    '6pm-9pm',
+    '9pm-12am',
+    '12am-3am',
+    '3am-6am',
+  ];
+  String selectedTimeSlot = "6am-9am";
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
   TextEditingController PhonenumController = TextEditingController();
   TextEditingController AddressController = TextEditingController();
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
   void validate() {
     if (_formkey.currentState!.validate()) {
       print('ok');
@@ -46,14 +63,18 @@ class _AppointmentState extends State<Appointment> {
   }
 
   String url = "http://${Url.ip}/HhcApi/api/Login/AddRegister";
+
   Future<Null> _selectDate(BuildContext context) async {
     DateTime? _datePicker = await showDatePicker(
       context: context,
-      initialDate: _date, // Current Date
-      firstDate: DateTime(2010), // First Date
-      lastDate: DateTime(2050), // Last Date
-      textDirection:
-          TextDirection.ltr, // Header Text or Button Direction ltr or rtl
+      initialDate: _date,
+      // Current Date
+      firstDate: DateTime(2010),
+      // First Date
+      lastDate: DateTime(2050),
+      // Last Date
+      textDirection: TextDirection.ltr,
+      // Header Text or Button Direction ltr or rtl
       initialDatePickerMode: DatePickerMode.day, // Day or Year Mode
       //   selectableDayPredicate: (DateTime val) =>
       //       val.weekday == 6 || val.weekday == 7 ? false : true, // WeekDay Off
@@ -83,7 +104,7 @@ class _AppointmentState extends State<Appointment> {
         'Phone': PhonenumController.text,
         'Address': AddressController.text,
         'Service': widget.service,
-        'Username': widget.username,
+        'Username': widget.userObj.username,
       },
     );
     if (res.statusCode == 200) {
@@ -270,9 +291,6 @@ class _AppointmentState extends State<Appointment> {
 
             Row(
               children: [
-                SizedBox(
-                  width: 10,
-                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: RaisedButton(
@@ -300,67 +318,140 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  width: 70,
+                  width: 30,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: RaisedButton(
-                    onPressed: () {
-                      setState(() {
-                        _pickTime();
-                      });
-                    },
-                    color: Colors.blue,
-                    child: Row(
-                      children: [
-                        Text(
-                          'Select Time',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: 180,
+                      child: Center(
+                        child: Text(
+                          _date.day.toString() +
+                              '-' +
+                              _date.month.toString() +
+                              '-' +
+                              _date.year.toString(),
+                          style: TextStyle(fontSize: 15),
                         ),
-                        SizedBox(
-                          width: 3,
-                        ),
-                        Icon(
-                          Icons.schedule,
-                          color: Colors.white,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
+
+                // Padding(
+                //   padding: const EdgeInsets.all(16.0),
+                //   child: RaisedButton(
+                //     onPressed: () {
+                //       setState(() {
+                //         _pickTime();
+                //       });
+                //     },
+                //     color: Colors.blue,
+                //     child: Row(
+                //       children: [
+                //         Text(
+                //           'Select Time',
+                //           style: TextStyle(
+                //             color: Colors.white,
+                //           ),
+                //         ),
+                //         SizedBox(
+                //           width: 3,
+                //         ),
+                //         Icon(
+                //           Icons.schedule,
+                //           color: Colors.white,
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
               ],
             ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      'Date: ',
-                      style: TextStyle(fontSize: 20, color: Colors.teal),
-                    ),
-                    Text(
-                      _date.day.toString() +
-                          '-' +
-                          _date.month.toString() +
-                          '-' +
-                          _date.year.toString(),
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    SizedBox(
-                      width: 150,
-                    ),
-                    Text(
-                      'Time: ',
-                      style: TextStyle(fontSize: 20, color: Colors.teal),
-                    ),
-                    Text('${_time.hour}:${_time.minute} '),
-                  ],
+                child: Container(
+                  height: 40,
+                  child: Row(
+                    children: [
+                      Text(
+                        'Select Time Slot:',
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        width: 200,
+                        child: DropdownButton(
+                          autofocus: true,
+                          focusColor: Colors.white,
+                          isExpanded: true,
+                          onChanged: (String? value) {
+                            setState(
+                              () {
+                                this.selectedTimeSlot = value!;
+                                if (selectedTimeSlot == "6am-9am" ||
+                                    selectedTimeSlot == "9am-12pm" ||
+                                    selectedTimeSlot == "12pm-3pm" ||
+                                    selectedTimeSlot == "3pm-6pm") {
+                                  Shift = 'Morning';
+                                  print(selectedTimeSlot + ' ' + Shift);
+                                } else if (selectedTimeSlot == '6pm-9pm' ||
+                                    selectedTimeSlot == '9pm-12am') {
+                                  Shift = "Evening";
+                                  print(selectedTimeSlot + ' ' + Shift);
+                                } else if (selectedTimeSlot == '12am-3am' ||
+                                    selectedTimeSlot == '3am-6am') {
+                                  Shift = "Night";
+                                  print(selectedTimeSlot + ' ' + Shift);
+                                }
+                              },
+                            );
+                          },
+                          value: selectedTimeSlot,
+                          items: timeslot.map((item) {
+                            return DropdownMenuItem(
+                              child: item == "6am-9am" ||
+                                      item == "9am-12pm" ||
+                                      item == "12pm-3pm" ||
+                                      item == "3pm-6pm"
+                                  ? Text(
+                                      item + ' ' + "-Morning" + "-3Hr",
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.black,
+                                      ),
+                                    )
+                                  : item == '6pm-9pm' || item == "9pm-12am"
+                                      ? Text(
+                                          item + ' ' + "-Evening" + "-3Hr",
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            color: Colors.black,
+                                          ),
+                                        )
+                                      : Text(
+                                          item + ' ' + "-Night" + "-3Hr",
+                                          style: TextStyle(
+                                            fontSize: 17,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                              value: item,
+                            );
+                          }).toList(),
+                          dropdownColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
+
             // ListTile(
             //   title: Text('Time : ${_time.hour}:${_time.minute}'),
             //   trailing: Icon(Icons.timer),

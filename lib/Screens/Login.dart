@@ -2,15 +2,14 @@ import 'dart:convert';
 import "package:flutter/material.dart";
 import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
-import 'package:hhc/Screens/AddEmp.dart';
-import 'package:hhc/Screens/AddOrg.dart';
 import 'package:hhc/Screens/Employee.dart';
 import '../Urls.dart';
 import 'Home.dart';
 import 'OrgAdmin.dart';
 import 'Signup.dart';
-import 'hhcAdmin.dart';
 import 'package:http/http.dart' as http;
+
+import 'hhcAdmin.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -229,127 +228,127 @@ class _State extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                 ),
               ),
-              Text(
-                "OR",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.black,
-                ),
-              ),
-              Container(
-                child: Row(
-                  children: <Widget>[
-                    Text('Sign UP as '),
-                    // FlatButton(
-                    //   textColor: Colors.blue,
-                    //   child: Icon(
-                    //     Icons.add_business_outlined,
-                    //     size: 50,
-                    //   ),
-                    //   onPressed: () {
-                    //     Navigator.push(context,
-                    //         MaterialPageRoute(builder: (context) => AddOrg()));
-                    //   },
-                    // )
-                    Container(
-                      width: 150,
-                      height: 50,
-                      child: DropdownButton(
-                        autofocus: true,
-                        focusColor: Colors.white,
-                        isExpanded: true,
-                        hint: Text(
-                          'Organization',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 10,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        onChanged: (String? value) {
-                          setState(() {
-                            this.selectedName = value!;
-                            Department = selectedName;
-                            print(Department);
-                            if (Department == 'Organization') {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddOrg()));
-                              });
-                            }
-                            if (Department == 'Nurse') {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddEmp(
-                                              dep: Department,
-                                              org: "Independent",
-                                              obj: OrgObj,
-                                            )));
-                              });
-                            }
-                            if (Department == 'Physio') {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddEmp(
-                                              dep: Department,
-                                              org: "Independent",
-                                              obj: OrgObj,
-                                            )));
-                              });
-                            }
-                            if (Department == 'Vaccinator') {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddEmp(
-                                              dep: Department,
-                                              org: "Independent",
-                                              obj: OrgObj,
-                                            )));
-                              });
-                            }
-                            if (Department == 'General Physician') {
-                              setState(() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => AddEmp(
-                                              dep: Department,
-                                              org: "Independent",
-                                              obj: OrgObj,
-                                            )));
-                              });
-                            }
-                          });
-                        },
-                        value: selectedName,
-                        items: locations.map((item) {
-                          return DropdownMenuItem(
-                            child: Text(
-                              item,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.blue,
-                              ),
-                            ),
-                            value: item,
-                          );
-                        }).toList(),
-                        dropdownColor: Colors.white,
-                      ),
-                    ),
-                  ],
-                  mainAxisAlignment: MainAxisAlignment.center,
-                ),
-              ),
+              // Text(
+              //   "OR",
+              //   style: TextStyle(
+              //     fontSize: 20,
+              //     fontWeight: FontWeight.w300,
+              //     color: Colors.black,
+              //   ),
+              // ),
+              // Container(
+              //   child: Row(
+              //     children: <Widget>[
+              //       Text('Sign UP as '),
+              //       // FlatButton(
+              //       //   textColor: Colors.blue,
+              //       //   child: Icon(
+              //       //     Icons.add_business_outlined,
+              //       //     size: 50,
+              //       //   ),
+              //       //   onPressed: () {
+              //       //     Navigator.push(context,
+              //       //         MaterialPageRoute(builder: (context) => AddOrg()));
+              //       //   },
+              //       // )
+              //       Container(
+              //         width: 150,
+              //         height: 50,
+              //         child: DropdownButton(
+              //           autofocus: true,
+              //           focusColor: Colors.white,
+              //           isExpanded: true,
+              //           hint: Text(
+              //             'Organization',
+              //             style: TextStyle(
+              //               fontWeight: FontWeight.w300,
+              //               fontSize: 10,
+              //               color: Colors.blue,
+              //             ),
+              //           ),
+              //           onChanged: (String? value) {
+              //             setState(() {
+              //               this.selectedName = value!;
+              //               Department = selectedName;
+              //               print(Department);
+              //               if (Department == 'Organization') {
+              //                 setState(() {
+              //                   Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) => AddOrg()));
+              //                 });
+              //               }
+              //               if (Department == 'Nurse') {
+              //                 setState(() {
+              //                   Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) => AddEmp(
+              //                                 dep: Department,
+              //                                 org: "Independent",
+              //                                 obj: OrgObj,
+              //                               )));
+              //                 });
+              //               }
+              //               if (Department == 'Physio') {
+              //                 setState(() {
+              //                   Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) => AddEmp(
+              //                                 dep: Department,
+              //                                 org: "Independent",
+              //                                 obj: OrgObj,
+              //                               )));
+              //                 });
+              //               }
+              //               if (Department == 'Vaccinator') {
+              //                 setState(() {
+              //                   Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) => AddEmp(
+              //                                 dep: Department,
+              //                                 org: "Independent",
+              //                                 obj: OrgObj,
+              //                               )));
+              //                 });
+              //               }
+              //               if (Department == 'General Physician') {
+              //                 setState(() {
+              //                   Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) => AddEmp(
+              //                                 dep: Department,
+              //                                 org: "Independent",
+              //                                 obj: OrgObj,
+              //                               )));
+              //                 });
+              //               }
+              //             });
+              //           },
+              //           value: selectedName,
+              //           items: locations.map((item) {
+              //             return DropdownMenuItem(
+              //               child: Text(
+              //                 item,
+              //                 style: TextStyle(
+              //                   fontSize: 15,
+              //                   color: Colors.blue,
+              //                 ),
+              //               ),
+              //               value: item,
+              //             );
+              //           }).toList(),
+              //           dropdownColor: Colors.white,
+              //         ),
+              //       ),
+              //     ],
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //   ),
+              // ),
             ],
           ),
         ),

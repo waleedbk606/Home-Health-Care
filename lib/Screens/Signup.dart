@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/AddOrg.dart';
-import 'AddEmp.dart';
 import 'Login.dart';
 import '../Urls.dart';
 import 'dart:convert';
@@ -66,12 +65,12 @@ class _SignupState extends State<Signup> {
         'Lname': LnameController.text,
         'Email': EmailController.text,
         'Username': UsernameController.text,
-        'Password': PasswordController.text,
+        'Password': PasswordController.text
       },
     );
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
+      var data = json.decode(json.encode(res.body));
       if (data["error"]) {
         setState(() {
           sending = false;
@@ -85,7 +84,6 @@ class _SignupState extends State<Signup> {
         UsernameController.text = '';
         PasswordController.text = '';
         _value = '';
-
         setState(() {
           sending = false;
           success = true;
@@ -107,44 +105,35 @@ class _SignupState extends State<Signup> {
         body: {
           'Username': UsernameController.text,
           'Password': PasswordController.text,
-          'Role': "User",
+          'Role': "User"
         },
       );
       if (res.statusCode == 200) {
         print(res.body);
-        var data = json.decode(res.body);
-        if (data["error"]) {
-          setState(
-            () {
-              sending = false;
-              error = true;
-              msg = data["message"];
-            },
-          );
-        }
+        var data = json.decode(json.encode(res.body));
+        print(data);
       }
-    }
-    if (OrgCheck == "Organization") {
+    } else if (OrgCheck == "Organization") {
       var res = await http.post(
         Uri.parse(urllog),
         body: {
           'Username': UsernameController.text,
           'Password': PasswordController.text,
-          'Role': "OrgAdmin",
+          'Role': "OrgAdmin"
         },
       );
       if (res.statusCode == 200) {
         print(res.body);
-        var data = json.decode(res.body);
-        if (data["error"]) {
-          setState(
-            () {
-              sending = false;
-              error = true;
-              msg = data["message"];
-            },
-          );
-        }
+        // var data = json.decode(res.body);
+        // if (data["error"]) {
+        //   setState(
+        //     () {
+        //       sending = false;
+        //       error = true;
+        //       msg = data["message"];
+        //     },
+        //   );
+        // }
       }
     } else {
       var res = await http.post(
@@ -152,21 +141,21 @@ class _SignupState extends State<Signup> {
         body: {
           'Username': UsernameController.text,
           'Password': PasswordController.text,
-          'Role': "Employee",
+          'Role': "Employee"
         },
       );
       if (res.statusCode == 200) {
         print(res.body);
-        var data = json.decode(res.body);
-        if (data["error"]) {
-          setState(
-            () {
-              sending = false;
-              error = true;
-              msg = data["message"];
-            },
-          );
-        }
+        // var data = json.decode(json.encode(res.body));
+        // if (data["error"]) {
+        //   setState(
+        //     () {
+        //       sending = false;
+        //       error = true;
+        //       msg = data["message"];
+        //     },
+        //   );
+        // }
       }
     }
   }
@@ -353,24 +342,24 @@ class _SignupState extends State<Signup> {
         'Fname': FnameController.text,
         'Lname': LnameController.text,
         'Email': EmailController.text,
-        'Department': OrgCheck.toString(),
+        'Department': OrgCheck,
         'OrgName': "Independent",
         'Username': UsernameController.text,
         'Password': PasswordController.text,
-        'Status': "Details Required",
+        'Status': "Details Required"
       },
     );
 
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      if (data["error"]) {
-        setState(() {
-          sending = false;
-          error = true;
-          msg = data["message"];
-        });
-      }
+      // var data = json.decode(res.body);
+      // if (data["error"]) {
+      //   setState(() {
+      //     sending = false;
+      //     error = true;
+      //     msg = data["message"];
+      //   });
+      // }
     }
   }
 }

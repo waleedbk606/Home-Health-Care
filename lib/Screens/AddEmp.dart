@@ -10,13 +10,9 @@ import 'package:http/http.dart' as http;
 import '../Urls.dart';
 
 class AddEmp extends StatefulWidget {
-  final String dep;
-  final String org;
   final Organization obj;
 
-  const AddEmp(
-      {Key? key, required this.dep, required this.org, required this.obj})
-      : super(key: key);
+  const AddEmp({Key? key, required this.obj}) : super(key: key);
 
   @override
   _AddEmpState createState() => _AddEmpState();
@@ -24,6 +20,13 @@ class AddEmp extends StatefulWidget {
 
 class _AddEmpState extends State<AddEmp> {
   late Organization obj = widget.obj;
+  List<String> locations = [
+    "Nurse",
+    "Physio",
+    "Vaccinator",
+    "General Physician",
+  ];
+  String selectedName = "Nurse";
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController EmailController = TextEditingController();
@@ -60,24 +63,24 @@ class _AddEmpState extends State<AddEmp> {
         'Fname': FnameController.text,
         'Lname': LnameController.text,
         'Email': EmailController.text,
-        'Department': widget.dep,
-        'OrgName': widget.org,
+        'Department': selectedName,
+        'OrgName': obj.name,
         'Username': UsernameController.text,
         'Password': PasswordController.text,
-        'Status': "Details Required",
+        'Status': "Details Required"
       },
     );
 
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      if (data["error"]) {
-        setState(() {
-          sending = false;
-          error = true;
-          msg = data["message"];
-        });
-      }
+      // var data = json.decode(res.body);
+      // if (data["error"]) {
+      //   setState(() {
+      //     sending = false;
+      //     error = true;
+      //     msg = data["message"];
+      //   });
+      // }
     }
   }
 
@@ -94,8 +97,6 @@ class _AddEmpState extends State<AddEmp> {
     );
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      print(data);
     } else {
       setState(
         () {
@@ -118,36 +119,6 @@ class _AddEmpState extends State<AddEmp> {
   //     throw Exception('Failed to load album');
   //   }
   // }
-
-  Future<void> sendSchedule(Employee edata) async {
-    var res = await http.post(
-      Uri.parse(urllog),
-      body: {
-        "eid": edata.eid,
-        "fname": edata.fname,
-        "lname": edata.lname,
-        "orgname": edata.orgName,
-        "dep": edata.department,
-        "shift": 'Morning',
-        "noOfpndApnt": '0',
-        "ratings": '0',
-      },
-    );
-    if (res.statusCode == 200) {
-      print(res.body);
-      var data = json.decode(res.body);
-      print(data);
-    } else {
-      setState(
-        () {
-          error = true;
-          msg = "Error during sending data";
-          sending = false;
-        },
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,6 +130,45 @@ class _AddEmpState extends State<AddEmp> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                width: 200,
+                height: 50,
+                child: DropdownButton(
+                  autofocus: true,
+                  focusColor: Colors.white,
+                  isExpanded: true,
+                  hint: Text(
+                    'Select Department',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  onChanged: (String? value) {
+                    setState(
+                      () {
+                        this.selectedName = value!;
+                        print(selectedName);
+                      },
+                    );
+                  },
+                  value: selectedName,
+                  items: locations.map((item) {
+                    return DropdownMenuItem(
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.teal,
+                        ),
+                      ),
+                      value: item,
+                    );
+                  }).toList(),
+                  dropdownColor: Colors.white,
+                ),
+              ),
               Container(
                 padding: EdgeInsets.all(10),
                 child: TextField(
@@ -251,23 +261,18 @@ class _AddEmpState extends State<AddEmp> {
                               ),
                             ),
                             onPressed: () {
-                              if (widget.org == "Independent") {
-                                setState(() {
+                              setState(
+                                () {
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LoginPage()));
-                                });
-                              } else {
-                                setState(() {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => OrgAdmin(
-                                                OrgObj: obj,
-                                              )));
-                                });
-                              }
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => OrgAdmin(
+                                        OrgObj: obj,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
                             },
                           ),
                         ],

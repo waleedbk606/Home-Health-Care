@@ -67,7 +67,6 @@ class _hhcHomeState extends State<hhcHome> {
         selectedstaff = "Nurse";
         _Staff.addAll(Staff);
       });
-      print(_Staff.elementAt(1));
       return _Staff;
     } else {
       throw Exception('Failed to load album');
@@ -324,8 +323,9 @@ class _hhcHomeState extends State<hhcHome> {
                         MaterialPageRoute(
                             builder: (context) => Appointment(
                                   service: selectedServices,
-                                  username: 'wbk',
-                                  OnsRep: selectedItration,
+                                  userObj: obj,
+                                  org: selectedName,
+                                  dep: selectedstaff,
                                 )));
                   },
                   padding: EdgeInsets.symmetric(

@@ -40,6 +40,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text(emp.fname + " " + emp.lname)),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: EdgeInsets.all(5),
@@ -52,55 +53,82 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                     height: 40,
                     width: 150,
                     padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: TextButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+                    child: emp.status == "Details Required"
+                        ? TextButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.blue),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              'ADD Details',
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.white),
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateEmp(obj: emp)),
+                              );
+                            },
+                          )
+                        : TextButton(
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.blue),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              'Apply For Leave',
+                              style:
+                                  TextStyle(fontSize: 15, color: Colors.white),
+                            ),
+                            onPressed: () {},
                           ),
-                        ),
-                      ),
-                      child: Text(
-                        'Apply For Leave',
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      ),
-                      onPressed: () {},
-                    ),
                   ),
-                  SizedBox(
-                    width: 100,
-                  ),
-                  Container(
-                    height: 40,
-                    width: 150,
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: TextButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.blue),
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        'ADD Details',
-                        style: TextStyle(fontSize: 15, color: Colors.white),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UpdateEmp(obj: emp)),
-                        );
-                      },
-                    ),
-                  ),
+
+                  // SizedBox(
+                  //   width: 100,
+                  // ),
+                  // Container(
+                  //   height: 40,
+                  //   width: 150,
+                  //   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  //   child: TextButton(
+                  //     style: ButtonStyle(
+                  //       backgroundColor:
+                  //           MaterialStateProperty.all<Color>(Colors.blue),
+                  //       shape:
+                  //           MaterialStateProperty.all<RoundedRectangleBorder>(
+                  //         RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(30.0),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     child: Text(
+                  //       'ADD Details',
+                  //       style: TextStyle(fontSize: 15, color: Colors.white),
+                  //     ),
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //             builder: (context) => UpdateEmp(obj: emp)),
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                 ],
               ),
             ],

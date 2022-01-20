@@ -4,7 +4,6 @@ import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/AddEmp.dart';
 import 'package:hhc/Screens/AddService.dart';
-import 'package:hhc/Screens/UpdateEmp.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -243,8 +242,6 @@ class _OrgAdminState extends State<OrgAdmin> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => AddEmp(
-                                    dep: Department,
-                                    org: obj.name,
                                     obj: obj,
                                   ),
                                 ),
@@ -342,55 +339,55 @@ class _OrgAdminState extends State<OrgAdmin> {
                                                     SizedBox(
                                                       height: 3,
                                                     ),
-                                                    // Row(
-                                                    //   children: [
-                                                    //     Text(
-                                                    //       "Gender:  ",
-                                                    //       style: TextStyle(
-                                                    //         fontSize: 15,
-                                                    //         fontWeight:
-                                                    //             FontWeight.w400,
-                                                    //       ),
-                                                    //     ),
-                                                    //     Text(
-                                                    //       snapshot.data![index]
-                                                    //           .gender,
-                                                    //       textAlign:
-                                                    //           TextAlign.right,
-                                                    //       style: TextStyle(
-                                                    //         fontSize: 15,
-                                                    //         //fontWeight: FontWeight.w500,
-                                                    //         //color: Colors.teal,
-                                                    //       ),
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
-                                                    // SizedBox(
-                                                    //   height: 3,
-                                                    // ),
-                                                    // Row(
-                                                    //   children: [
-                                                    //     Text(
-                                                    //       "Qulification:  ",
-                                                    //       style: TextStyle(
-                                                    //         fontSize: 15,
-                                                    //         fontWeight:
-                                                    //             FontWeight.w400,
-                                                    //       ),
-                                                    //     ),
-                                                    //     Text(
-                                                    //       snapshot.data![index]
-                                                    //           .qualification,
-                                                    //       textAlign:
-                                                    //           TextAlign.right,
-                                                    //       style: TextStyle(
-                                                    //         fontSize: 15,
-                                                    //         //fontWeight: FontWeight.w500,
-                                                    //         //color: Colors.teal,
-                                                    //       ),
-                                                    //     ),
-                                                    //   ],
-                                                    // ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Gender:  ",
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          snapshot.data![index]
+                                                              .gender,
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            //fontWeight: FontWeight.w500,
+                                                            //color: Colors.teal,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 3,
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Qulification:  ",
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          snapshot.data![index]
+                                                              .qualification,
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            //fontWeight: FontWeight.w500,
+                                                            //color: Colors.teal,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
                                                     SizedBox(
                                                       height: 3,
                                                     ),

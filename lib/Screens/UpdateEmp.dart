@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/Employee.dart';
+import 'package:hhc/Screens/Login.dart';
 import 'package:hhc/Screens/OrgAdmin.dart';
 import 'package:hhc/Urls.dart';
 import 'dart:async';
@@ -112,11 +113,12 @@ class UpdateEmp extends StatefulWidget {
 
 class _UpdateEmpState extends State<UpdateEmp> {
   late Employee obj = widget.obj;
+  String selectedgender = 'Male';
+  String selectedshift = 'Morning';
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
   TextEditingController CNICController = TextEditingController();
-  TextEditingController GenderController = TextEditingController();
   TextEditingController PhoneController = TextEditingController();
   TextEditingController EmailController = TextEditingController();
   TextEditingController QualificationController = TextEditingController();
@@ -158,69 +160,110 @@ class _UpdateEmpState extends State<UpdateEmp> {
   }
 
   Future<void> sendData() async {
+    if (obj.orgName == "Independent") {
+      var res = await http.post(
+        Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
+        body: {
+          'eid': obj.eid.toString(),
+          'Fname': FnameController.text,
+          'Lname': LnameController.text,
+          'Age': AgeController.text,
+          'CNIC': CNICController.text,
+          'Gender': selectedgender,
+          'Phone': PhoneController.text,
+          'Email': EmailController.text,
+          'Qualification': QualificationController.text,
+          'Experience': ExperienceController.text,
+          'Username': UsernameController.text,
+          'Password': PasswordController.text,
+          'OrgName': obj.orgName,
+          'Department': obj.department,
+          'Status': "Pending",
+          'NofComApm': 0.toString(),
+          'Raitings': 0.toString()
+        },
+      );
+      if (res.statusCode == 200) {
+        print(res.body);
+      }
+      // else {
+      //   setState(() {
+      //     error = true;
+      //     msg = "Error during sending data";
+      //     sending = false;
+      //   });
+      // }
+    } else {
+      var res = await http.post(
+        Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
+        body: {
+          'eid': obj.eid.toString(),
+          'Fname': FnameController.text,
+          'Lname': LnameController.text,
+          'Age': AgeController.text,
+          'CNIC': CNICController.text,
+          'Gender': selectedgender,
+          'Phone': PhoneController.text,
+          'Email': EmailController.text,
+          'Qualification': QualificationController.text,
+          'Experience': ExperienceController.text,
+          'Username': UsernameController.text,
+          'Password': PasswordController.text,
+          'OrgName': obj.orgName,
+          'Department': obj.department,
+          'Status': "Accepted",
+          'NofComApm': 0.toString(),
+          'Raitings': 0.toString()
+        },
+      );
+      if (res.statusCode == 200) {
+        print(res.body);
+        var data = json.decode(res.body);
+        print(data);
+      }
+      // else {
+      //   setState(() {
+      //     error = true;
+      //     msg = "Error during sending data";
+      //     sending = false;
+      //   });
+      // }
+    }
+  }
+
+  Future<void> sendSchedule() async {
     var res = await http.post(
-      Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
+      Uri.parse(('http://${Url.ip}/HhcApi/api/Login/AddEmpSchedule')),
       body: {
-        'eid': obj.eid,
+        'eid': obj.eid.toString(),
         'Fname': FnameController.text,
         'Lname': LnameController.text,
-        'Age': AgeController.text,
-        'CNIC': CNICController.text,
-        'Gender': GenderController.text,
-        'Phone': PhoneController.text,
-        'Email': EmailController.text,
-        'Qualification': QualificationController.text,
-        'Experience': ExperienceController.text,
-        'Username': UsernameController.text,
-        'Password': PasswordController.text,
         'OrgName': obj.orgName,
-        'Department': obj.department,
-        'Status': obj.status,
+        'Dep': obj.department,
+        'Shift': selectedshift,
+        'noOfpndApnt': 0.toString(),
+        'Ratings': 0.toString(),
+        'date': 'NoDate',
+        'timeslot': 'S0',
       },
     );
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      print(data);
-      // if (data["error"]) {
-      //   setState(() {
-      //     sending = false;
-      //     error = true;
-      //     msg = data["message"];
-      //   });
-      // } else {
-      //   FnameController.text = '';
-      //   LnameController.text = '';
-      //   AgeController.text = '';
-      //   CNICController.text = '';
-      //   GenderController.text = '';
-      //   PhoneController.text = '';
-      //   EmailController.text = '';
-      //   QualificationController.text = '';
-      //   ExperienceController.text = '';
-      //   UsernameController.text = '';
-      //   PasswordController.text = '';
-      //   _value = '';
-      //
-      //   setState(() {
-      //     sending = false;
-      //     success = true;
-      //   });
-      // }
-    } else {
-      setState(() {
-        error = true;
-        msg = "Error during sending data";
-        sending = false;
-      });
     }
+    // else {
+    //   setState(() {
+    //     error = true;
+    //     msg = "Error during sending data";
+    //     sending = false;
+    //   });
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Update Employee"),
+        title: Text("Add Details"),
       ),
       body: FutureBuilder<List<Employee>>(
         future: futureorg,
@@ -231,16 +274,14 @@ class _UpdateEmpState extends State<UpdateEmp> {
                 itemBuilder: (context, index) {
                   FnameController.text = snapshot.data![index].fname.toString();
                   LnameController.text = snapshot.data![index].lname.toString();
-                  AgeController.text = snapshot.data![index].age.toString();
-                  CNICController.text = snapshot.data![index].cnic.toString();
-                  GenderController.text =
-                      snapshot.data![index].gender.toString();
-                  PhoneController.text = snapshot.data![index].phone.toString();
+                  //AgeController.text = snapshot.data![index].age.toString();
+                  //CNICController.text = snapshot.data![index].cnic.toString();
+                  //PhoneController.text = snapshot.data![index].phone.toString();
                   EmailController.text = snapshot.data![index].email.toString();
-                  QualificationController.text =
-                      snapshot.data![index].qualification.toString();
-                  ExperienceController.text =
-                      snapshot.data![index].experience.toString();
+                  //QualificationController.text =
+                  // snapshot.data![index].qualification.toString();
+                  //ExperienceController.text =
+                  // snapshot.data![index].experience.toString();
                   UsernameController.text =
                       snapshot.data![index].username.toString();
                   PasswordController.text =
@@ -280,13 +321,72 @@ class _UpdateEmpState extends State<UpdateEmp> {
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: TextField(
-                              controller: GenderController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Gender',
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Gender',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 40,
+                                          ),
+                                          Text(
+                                            'Male',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.teal,
+                                            ),
+                                          ),
+                                          Radio(
+                                            groupValue: selectedgender,
+                                            value: 'Male',
+                                            onChanged: (String? val) {
+                                              setState(() {
+                                                selectedgender = val!;
+                                                print(selectedgender);
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 100,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Female',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.teal,
+                                            ),
+                                          ),
+                                          Radio(
+                                            groupValue: selectedgender,
+                                            value: 'Female',
+                                            onChanged: (String? val) {
+                                              setState(() {
+                                                selectedgender = val!;
+                                                print(selectedgender);
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -340,25 +440,101 @@ class _UpdateEmpState extends State<UpdateEmp> {
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: TextField(
-                              controller: UsernameController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Username',
+                          // Container(
+                          //   padding: EdgeInsets.all(10),
+                          //   child: TextField(
+                          //     controller: UsernameController,
+                          //     decoration: InputDecoration(
+                          //       border: OutlineInputBorder(),
+                          //       labelText: 'Username',
+                          //     ),
+                          //   ),
+                          // ),
+                          // Container(
+                          //   padding: EdgeInsets.all(10),
+                          //   child: TextField(
+                          //     controller: PasswordController,
+                          //     decoration: InputDecoration(
+                          //       border: OutlineInputBorder(),
+                          //       labelText: 'Password',
+                          //     ),
+                          //   ),
+                          // ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 30,
                               ),
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: TextField(
-                              controller: PasswordController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Password',
+                              Row(
+                                children: [
+                                  Text(
+                                    'Morning',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.teal,
+                                    ),
+                                  ),
+                                  Radio(
+                                    groupValue: selectedshift,
+                                    value: 'Morning',
+                                    onChanged: (String? val) {
+                                      setState(() {
+                                        selectedshift = val!;
+                                        print(selectedshift);
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                            ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Evening',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.teal,
+                                    ),
+                                  ),
+                                  Radio(
+                                    groupValue: selectedshift,
+                                    value: 'Evening',
+                                    onChanged: (String? val) {
+                                      setState(() {
+                                        selectedshift = val!;
+                                        print(selectedshift);
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Night',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.teal,
+                                    ),
+                                  ),
+                                  Radio(
+                                    groupValue: selectedshift,
+                                    value: 'Night',
+                                    onChanged: (String? val) {
+                                      setState(() {
+                                        selectedshift = val!;
+                                        print(selectedshift);
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                           Container(
                             height: 60,
@@ -377,19 +553,18 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                 ),
                               ),
                               child: Text(
-                                'Update',
+                                'Submit',
                                 style: TextStyle(color: Colors.white),
                               ),
                               onPressed: () {
                                 sendData();
+                                sendSchedule();
                                 setState(
                                   () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => EmployeeHome(
-                                          obj: obj,
-                                        ),
+                                        builder: (context) => LoginPage(),
                                       ),
                                     );
                                   },
