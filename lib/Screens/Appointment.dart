@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hhc/Models/Schedule.dart';
 import 'package:hhc/Models/Users.dart';
 import 'package:hhc/Screens/Home.dart';
 import '../Urls.dart';
@@ -27,10 +28,13 @@ class Appointment extends StatefulWidget {
 class _AppointmentState extends State<Appointment> {
   DateTime _date = DateTime.now();
   TimeOfDay _time = TimeOfDay.now();
-  DateTime SelectedDate = DateTime.now();
+  String SelectedDate = '';
   TimeOfDay SelectedTime = TimeOfDay.now();
   String selectedgender = 'Male';
   String Shift = 'Morning';
+  late Schedule ScheduleObj;
+
+  // List<Schedule> paresd = [];
   List<String> timeslot = [
     '6am-9am',
     '9am-12pm',
@@ -42,6 +46,7 @@ class _AppointmentState extends State<Appointment> {
     '3am-6am',
   ];
   String selectedTimeSlot = "6am-9am";
+  String sO = '';
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
@@ -85,11 +90,107 @@ class _AppointmentState extends State<Appointment> {
     if (_datePicker != null && _datePicker != _date) {
       setState(() {
         _date = _datePicker;
-        SelectedDate = _date;
+        SelectedDate = _date.day.toString() +
+            '-' +
+            _date.month.toString() +
+            '-' +
+            _date.year.toString();
         print(
           SelectedDate.toString(),
         );
       });
+    }
+  }
+
+  Future<List<Schedule>> GetSchedule(
+      String shift, String data, String time) async {
+    final response = await http.get(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/Login/GetSchedule?orgname=${widget.org}&dep=${widget.dep}&shift=${shift}'));
+    if (response.statusCode == 200) {
+      List<Schedule> paresd = scheduleFromJson(response.body);
+      print(widget.org);
+      print(widget.dep);
+      print(data);
+      print(time);
+      if (paresd != null && paresd.length != 0) {
+        for (int i = 0; i < paresd.length; i++) {
+          if (paresd[i].date == 'NoDate' &&
+              paresd[i].timeslot == 'S0        ') {
+            ScheduleObj = paresd[i];
+            print(
+                ScheduleObj.fname + ' ' + ScheduleObj.lname + ' Is available');
+            break;
+          } else if (paresd[i].date == data && paresd[i].timeslot == time) {
+            print(paresd[i].fname +
+                ' ' +
+                paresd[i].lname +
+                ' Is Busy at ' +
+                time);
+            for (int j = i; j < 5; j++) {
+              if (paresd[j].eid == paresd[j + 1].eid) {
+                i++;
+              } else {
+                if (i >= paresd.length) {
+                  print('No Employee is free');
+                  break;
+                } else
+                  print(paresd[i].sid);
+                break;
+              }
+            }
+            continue;
+          } else if (paresd[i].date == data &&
+              paresd[i].timeslot == time + 'L') {
+            print(paresd[i].fname +
+                ' ' +
+                paresd[i].lname +
+                ' Is on Leave at ' +
+                time +
+                'L');
+            for (int j = i; j < 5; j++) {
+              if (paresd[j].eid == paresd[j + 1].eid) {
+                i++;
+              } else {
+                if (i >= paresd.length) {
+                  print('No Employee is free');
+                  break;
+                } else
+                  print(paresd[i].sid);
+                break;
+              }
+            }
+            continue;
+          } else if (paresd[i].date == data && paresd[i].timeslot == 'Leave') {
+            print(paresd[i].fname +
+                ' ' +
+                paresd[i].lname +
+                ' Is on Full Leave on ' +
+                data);
+            for (int j = 0; j < 5; j++) {
+              if (paresd[j].eid == paresd[j + 1].eid) {
+                i++;
+              } else {
+                i++;
+                if (i >= paresd.length) {
+                  print('No Employee is free');
+                  break;
+                } else
+                  print(paresd[i].fname + ' Now');
+                break;
+              }
+            }
+            continue;
+          } else {
+            print(paresd[i].fname + ' ' + paresd[i].lname + ' 606');
+            continue;
+          }
+        }
+      } else {
+        print('List is null');
+      }
+      return paresd;
+    } else {
+      throw Exception('Failed to load album');
     }
   }
 
@@ -393,20 +494,94 @@ class _AppointmentState extends State<Appointment> {
                             setState(
                               () {
                                 this.selectedTimeSlot = value!;
-                                if (selectedTimeSlot == "6am-9am" ||
-                                    selectedTimeSlot == "9am-12pm" ||
-                                    selectedTimeSlot == "12pm-3pm" ||
-                                    selectedTimeSlot == "3pm-6pm") {
-                                  Shift = 'Morning';
-                                  print(selectedTimeSlot + ' ' + Shift);
-                                } else if (selectedTimeSlot == '6pm-9pm' ||
-                                    selectedTimeSlot == '9pm-12am') {
-                                  Shift = "Evening";
-                                  print(selectedTimeSlot + ' ' + Shift);
-                                } else if (selectedTimeSlot == '12am-3am' ||
-                                    selectedTimeSlot == '3am-6am') {
-                                  Shift = "Night";
-                                  print(selectedTimeSlot + ' ' + Shift);
+                                if (selectedTimeSlot == "6am-9am") {
+                                  setState(() {
+                                    Shift = 'Morning';
+                                    sO = 'S1';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == "9am-12pm") {
+                                  setState(() {
+                                    Shift = 'Morning';
+                                    sO = 'S2';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == "12pm-3pm") {
+                                  setState(() {
+                                    Shift = 'Morning';
+                                    sO = 'S3';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == "3pm-6pm") {
+                                  setState(() {
+                                    Shift = 'Morning';
+                                    sO = 'S4';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == '6pm-9pm') {
+                                  setState(() {
+                                    Shift = "Evening";
+                                    sO = 'S5';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == '9pm-12am') {
+                                  setState(() {
+                                    Shift = "Evening";
+                                    sO = 'S6';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == '12am-3am') {
+                                  setState(() {
+                                    Shift = "Night";
+                                    sO = 'S7';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
+                                } else if (selectedTimeSlot == '3am-6am') {
+                                  setState(() {
+                                    Shift = "Night";
+                                    sO = 'S8';
+                                  });
+                                  print(selectedTimeSlot +
+                                      ' ' +
+                                      Shift +
+                                      ' ' +
+                                      sO);
+                                  GetSchedule(Shift, SelectedDate, sO);
                                 }
                               },
                             );
