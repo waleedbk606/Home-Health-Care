@@ -25,8 +25,11 @@ class _hhcHomeState extends State<hhcHome> {
   List<Services> _Service = [];
   var obj;
   String selectedName = "Pims";
+  String Org = '';
   String selectedstaff = "Nurse";
+  String Dep = '';
   String selectedServices = "Wound Dressing";
+  String Ser = '';
   String selectedItration = 'Once';
 
   Future<User> fetchUserDetails(String Username, String Password) async {
@@ -146,6 +149,7 @@ class _hhcHomeState extends State<hhcHome> {
                           setState(
                             () {
                               selectedName = newValue!;
+                              Org = selectedName;
                               fetchDepartment();
                             },
                           );
@@ -191,6 +195,7 @@ class _hhcHomeState extends State<hhcHome> {
                           setState(
                             () {
                               selectedstaff = newValue!;
+                              Dep = selectedstaff;
                               fetchDropServices();
                             },
                           );
@@ -239,6 +244,7 @@ class _hhcHomeState extends State<hhcHome> {
                           setState(
                             () {
                               selectedServices = newValue!;
+                              Ser = selectedServices;
                             },
                           );
                         },
@@ -319,14 +325,16 @@ class _hhcHomeState extends State<hhcHome> {
                 child: MaterialButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Appointment(
-                                  service: selectedServices,
-                                  userObj: obj,
-                                  org: selectedName,
-                                  dep: selectedstaff,
-                                )));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Appointment(
+                          service: Ser,
+                          userObj: obj,
+                          org: Org,
+                          dep: Dep,
+                        ),
+                      ),
+                    );
                   },
                   padding: EdgeInsets.symmetric(
                     horizontal: 10,

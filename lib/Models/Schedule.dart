@@ -23,6 +23,7 @@ class Schedule {
     required this.ratings,
     required this.date,
     required this.timeslot,
+    required this.noLeave,
   });
 
   int sid;
@@ -33,9 +34,10 @@ class Schedule {
   String dep;
   String shift;
   int noOfpndApnt;
-  dynamic ratings;
+  int ratings;
   String date;
   String timeslot;
+  int noLeave;
 
   factory Schedule.fromJson(Map<String, dynamic> json) => Schedule(
         sid: json["sid"],
@@ -49,6 +51,7 @@ class Schedule {
         ratings: json["ratings"],
         date: json["date"],
         timeslot: json["timeslot"],
+        noLeave: json["NoLeave"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,5 +66,6 @@ class Schedule {
         "ratings": ratings,
         "date": date,
         "timeslot": timeslot,
+        "NoLeave": noLeave,
       };
 }
