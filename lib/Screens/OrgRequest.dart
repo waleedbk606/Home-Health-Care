@@ -197,8 +197,6 @@ class _OrgRequestState extends State<OrgRequest> {
     );
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      print(data);
     } else {
       setState(
         () {

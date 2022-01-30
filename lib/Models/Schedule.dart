@@ -34,7 +34,7 @@ class Schedule {
   String dep;
   String shift;
   int noOfpndApnt;
-  int ratings;
+  double ratings;
   String date;
   String timeslot;
   int noLeave;
