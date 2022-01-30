@@ -29,12 +29,21 @@ class _AppointmentState extends State<Appointment> {
   DateTime _date = DateTime.now();
   TimeOfDay _time = TimeOfDay.now();
   String SelectedDate = '';
-  TimeOfDay SelectedTime = TimeOfDay.now();
   String selectedgender = 'Male';
   String Shift = 'Morning';
-  late Schedule ScheduleObj;
-
-  // List<Schedule> paresd = [];
+  Schedule ScheduleObj = new Schedule(
+      sid: 0,
+      eid: 0,
+      fname: '',
+      lname: '',
+      orgname: '',
+      dep: '',
+      shift: '',
+      noOfpndApnt: 0,
+      ratings: 0,
+      date: '',
+      timeslot: '',
+      noLeave: 0);
   List<String> timeslot = [
     '6am-9am',
     '9am-12pm',
@@ -47,6 +56,7 @@ class _AppointmentState extends State<Appointment> {
   ];
   String selectedTimeSlot = "6am-9am";
   String sO = '';
+  String availability = " ";
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
@@ -63,7 +73,6 @@ class _AppointmentState extends State<Appointment> {
   @override
   void initState() {
     super.initState();
-    _time = TimeOfDay.now();
     _date = DateTime.now();
   }
 
@@ -102,8 +111,16 @@ class _AppointmentState extends State<Appointment> {
     }
   }
 
-  Future<List<Schedule>> GetSchedule(
-      String shift, String data, String time) async {
+  Future<String> CheckAvailablity(String a) async {
+    String b = a == ' '
+        ? ' '
+        : a == 'true'
+            ? 'Available'
+            : 'Not-Avaliable';
+    return b;
+  }
+
+  Future<Schedule> GetSchedule(String shift, String data, String time) async {
     final response = await http.get(Uri.parse(
         'http://${Url.ip}/HhcApi/api/Login/GetSchedule?orgname=${widget.org}&dep=${widget.dep}&shift=${shift}'));
     if (response.statusCode == 200) {
@@ -116,7 +133,10 @@ class _AppointmentState extends State<Appointment> {
         for (int i = 0; i < paresd.length; i++) {
           if (paresd[i].date == 'NoDate' &&
               paresd[i].timeslot == 'S0        ') {
-            ScheduleObj = paresd[i];
+            setState(() {
+              availability = 'true';
+              ScheduleObj = paresd[i];
+            });
             print(
                 ScheduleObj.fname + ' ' + ScheduleObj.lname + ' Is available');
             break;
@@ -126,17 +146,23 @@ class _AppointmentState extends State<Appointment> {
                 paresd[i].lname +
                 ' Is Busy at ' +
                 time);
+            setState(() {
+              availability = 'false';
+            });
             for (int j = i; j < 5; j++) {
-              if (paresd[j].eid == paresd[j + 1].eid) {
-                i++;
-              } else {
-                if (i >= paresd.length) {
-                  print('No Employee is free');
+              if (j + 1 != paresd.length) {
+                if (paresd[j].eid == paresd[j + 1].eid) {
+                  i++;
+                } else {
+                  if (i >= paresd.length) {
+                    print('No Employee is free');
+                    break;
+                  } else
+                    print(paresd[i].sid);
                   break;
-                } else
-                  print(paresd[i].sid);
-                break;
+                }
               }
+              break;
             }
             continue;
           } else if (paresd[i].date == data &&
@@ -147,17 +173,23 @@ class _AppointmentState extends State<Appointment> {
                 ' Is on Leave at ' +
                 time +
                 'L');
+            setState(() {
+              availability = 'false';
+            });
             for (int j = i; j < 5; j++) {
-              if (paresd[j].eid == paresd[j + 1].eid) {
-                i++;
-              } else {
-                if (i >= paresd.length) {
-                  print('No Employee is free');
+              if (j + 1 != paresd.length) {
+                if (paresd[j].eid == paresd[j + 1].eid) {
+                  i++;
+                } else {
+                  if (i >= paresd.length) {
+                    print('No Employee is free');
+                    break;
+                  } else
+                    print(paresd[i].sid);
                   break;
-                } else
-                  print(paresd[i].sid);
-                break;
+                }
               }
+              break;
             }
             continue;
           } else if (paresd[i].date == data && paresd[i].timeslot == 'Leave') {
@@ -166,60 +198,456 @@ class _AppointmentState extends State<Appointment> {
                 paresd[i].lname +
                 ' Is on Full Leave on ' +
                 data);
+            setState(() {
+              availability = 'false';
+            });
             for (int j = 0; j < 5; j++) {
-              if (paresd[j].eid == paresd[j + 1].eid) {
-                i++;
-              } else {
-                i++;
-                if (i >= paresd.length) {
-                  print('No Employee is free');
+              if (j + 1 != paresd.length) {
+                if (paresd[j].eid == paresd[j + 1].eid) {
+                  i++;
+                } else {
+                  i++;
+                  if (i >= paresd.length) {
+                    print('No Employee is free');
+                    break;
+                  } else
+                    print(paresd[i].fname + ' Now');
                   break;
-                } else
-                  print(paresd[i].fname + ' Now');
-                break;
+                }
               }
+              break;
             }
             continue;
+          } else if (i + 1 != paresd.length) {
+            if (paresd[i].eid != paresd[i + 1].eid) {
+              setState(() {
+                ScheduleObj = paresd[i];
+                availability = 'true';
+              });
+              print(
+                ScheduleObj.fname + ' ' + ScheduleObj.lname + ' Is available',
+              );
+              break;
+            } else {
+              continue;
+            }
           } else {
-            print(paresd[i].fname + ' ' + paresd[i].lname + ' 606');
-            continue;
+            setState(() {
+              availability = 'true';
+              ScheduleObj = paresd[i];
+            });
+            print(
+              ScheduleObj.fname + ' ' + ScheduleObj.lname + ' Is available',
+            );
+            break;
           }
         }
       } else {
-        print('List is null');
+        setState(() {
+          availability = 'false';
+        });
+        print('No Employee in this shift');
       }
-      return paresd;
+      print(availability);
+      if (ScheduleObj.fname != '') {
+        print(ScheduleObj.fname + ' ' + ScheduleObj.lname + ' Is Appointed');
+      } else {
+        print('No Employee Available!');
+      }
+      return ScheduleObj;
     } else {
       throw Exception('Failed to load album');
     }
   }
 
-  Future<void> sendData() async {
+  Future<void> sendAppointment() async {
     var res = await http.post(
-      Uri.parse(url),
+      Uri.parse("http://${Url.ip}/HhcApi/api/Login/AddAppointment"),
       body: {
-        'Fname': FnameController.text,
-        'Lname': LnameController.text,
-        'Age': AgeController.text,
-        'Gender': selectedgender,
-        'Phone': PhonenumController.text,
-        'Address': AddressController.text,
-        'Service': widget.service,
-        'Username': widget.userObj.username,
+        "orgname": widget.org,
+        "eid": ScheduleObj.eid.toString(),
+        "empname": ScheduleObj.fname + ' ' + ScheduleObj.lname,
+        "dep": widget.dep,
+        "service": widget.service,
+        "uid": widget.userObj.uid.toString(),
+        "username": widget.userObj.fname + ' ' + widget.userObj.lname,
+        "pfname": FnameController.text,
+        "plname": LnameController.text,
+        "age": AgeController.text,
+        "gender": selectedgender,
+        "phnum": PhonenumController.text,
+        "address": AddressController.text,
+        "date": SelectedDate,
+        "timeslot": sO,
+        "timeduration": '3hr',
+        "status": "Pending",
+        "ratings": 0.toString(),
       },
     );
     if (res.statusCode == 200) {
       print(res.body);
-      var data = json.decode(res.body);
-      return data;
     }
+  }
+
+  Future<void> NullDate(int id) async {
+    var res = await http.post(
+      Uri.parse("http://${Url.ip}/HhcApi/api/Login/AddNullDatedSchedule"),
+      body: {
+        "sid": ScheduleObj.sid.toString(),
+        "eid": ScheduleObj.eid.toString(),
+        "fname": ScheduleObj.fname,
+        "lname": ScheduleObj.lname,
+        "orgname": ScheduleObj.orgname,
+        "dep": ScheduleObj.dep,
+        "shift": ScheduleObj.shift,
+        "noOfpndApnt": ScheduleObj.noOfpndApnt.toString(),
+        "ratings": ScheduleObj.ratings.toString(),
+        "date": SelectedDate,
+        "timeslot": sO,
+        "NoLeave": ScheduleObj.noLeave.toString(),
+      },
+    );
+    if (res.statusCode == 200) {
+      print(res.body);
+      UpdateOrg(ScheduleObj.eid);
+    }
+  }
+
+  Future<void> GivenDate() async {
+    var res = await http.post(
+      Uri.parse("http://${Url.ip}/HhcApi/api/Login/AddEmpSchedule"),
+      body: {
+        "eid": ScheduleObj.eid.toString(),
+        "fname": ScheduleObj.fname,
+        "lname": ScheduleObj.lname,
+        "orgname": ScheduleObj.orgname,
+        "dep": ScheduleObj.dep,
+        "shift": ScheduleObj.shift,
+        "noOfpndApnt": ScheduleObj.noOfpndApnt.toString(),
+        "ratings": ScheduleObj.ratings.toString(),
+        "date": SelectedDate,
+        "timeslot": sO,
+        "NoLeave": ScheduleObj.noLeave.toString(),
+      },
+    );
+    if (res.statusCode == 200) {
+      print(res.body);
+      UpdateOrg(ScheduleObj.eid);
+    }
+  }
+
+  Future<void> UpdateOrg(int id) async {
+    final response = await http.patch(
+        Uri.parse('http://${Url.ip}/HhcApi/api/Login/UpdatePendApp?eid=${id}'));
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw Exception('Failed to load album');
+    }
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Confirm"),
+      onPressed: () {
+        if (ScheduleObj.date == 'NoDate' &&
+            ScheduleObj.timeslot == 'S0        ') {
+          sendAppointment();
+          NullDate(ScheduleObj.sid);
+          MaterialPageRoute(
+            builder: (context) => hhcHome(
+                username: widget.userObj.username,
+                password: widget.userObj.password),
+          );
+        } else {
+          sendAppointment();
+          GivenDate();
+          print("Data Send");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => hhcHome(
+                username: widget.userObj.username,
+                password: widget.userObj.password,
+              ),
+            ),
+          );
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Center(
+        child: Text(
+          "Appointment",
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+      ),
+      content: Row(
+        children: [
+          Container(
+            width: 100,
+            height: 340,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 25,
+                  child: Text("Name:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Age:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Gender:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 50,
+                  child: Text("Address:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Service:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Date:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Time:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Employee:"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Organization:"),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 150,
+            height: 340,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 25,
+                  child: Text(
+                    FnameController.text + ' ' + LnameController.text,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    AgeController.text,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    selectedgender,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 50,
+                  child: Text(
+                    AddressController.text,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    widget.service,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    SelectedDate,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                    height: 25,
+                    child: sO == 'S1'
+                        ? Text(
+                            "6am-9am (3hr)",
+                            style: TextStyle(
+                              color: Colors.teal,
+                            ),
+                          )
+                        : sO == 'S2'
+                            ? Text(
+                                "9am-12pm (3hr)",
+                                style: TextStyle(
+                                  color: Colors.teal,
+                                ),
+                              )
+                            : sO == 'S3'
+                                ? Text(
+                                    "12pm-3pm (3hr)",
+                                    style: TextStyle(
+                                      color: Colors.teal,
+                                    ),
+                                  )
+                                : sO == 'S4'
+                                    ? Text(
+                                        "3pm-6pm (3hr)",
+                                        style: TextStyle(
+                                          color: Colors.teal,
+                                        ),
+                                      )
+                                    : sO == 'S5'
+                                        ? Text(
+                                            "6pm-9pm (3hr)",
+                                            style: TextStyle(
+                                              color: Colors.teal,
+                                            ),
+                                          )
+                                        : sO == 'S6'
+                                            ? Text(
+                                                "9pm-12am (3hr)",
+                                                style: TextStyle(
+                                                  color: Colors.teal,
+                                                ),
+                                              )
+                                            : sO == 'S7'
+                                                ? Text(
+                                                    "12am-3am (3hr)",
+                                                    style: TextStyle(
+                                                      color: Colors.teal,
+                                                    ),
+                                                  )
+                                                : Text(
+                                                    "3am-6am (3hr)",
+                                                    style: TextStyle(
+                                                      color: Colors.teal,
+                                                    ),
+                                                  )),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    ScheduleObj.fname + ' ' + ScheduleObj.lname,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    widget.org,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointment'),
+        title: Text('Appointment Booking'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -485,7 +913,7 @@ class _AppointmentState extends State<Appointment> {
                         width: 10,
                       ),
                       Container(
-                        width: 200,
+                        width: 230,
                         child: DropdownButton(
                           autofocus: true,
                           focusColor: Colors.white,
@@ -504,6 +932,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == "9am-12pm") {
                                   setState(() {
@@ -515,6 +959,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == "12pm-3pm") {
                                   setState(() {
@@ -526,6 +986,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == "3pm-6pm") {
                                   setState(() {
@@ -537,6 +1013,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == '6pm-9pm') {
                                   setState(() {
@@ -548,6 +1040,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == '9pm-12am') {
                                   setState(() {
@@ -559,6 +1067,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == '12am-3am') {
                                   setState(() {
@@ -570,6 +1094,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 } else if (selectedTimeSlot == '3am-6am') {
                                   setState(() {
@@ -581,6 +1121,22 @@ class _AppointmentState extends State<Appointment> {
                                       Shift +
                                       ' ' +
                                       sO);
+                                  setState(() {
+                                    if (ScheduleObj != null) {
+                                      ScheduleObj.eid = 0;
+                                      ScheduleObj.sid = 0;
+                                      ScheduleObj.fname = '';
+                                      ScheduleObj.lname = '';
+                                      ScheduleObj.date = '';
+                                      ScheduleObj.dep = '';
+                                      ScheduleObj.noLeave = 0;
+                                      ScheduleObj.noOfpndApnt = 0;
+                                      ScheduleObj.orgname = '';
+                                      ScheduleObj.ratings = 0;
+                                      ScheduleObj.shift = '';
+                                      ScheduleObj.timeslot = '';
+                                    }
+                                  });
                                   GetSchedule(Shift, SelectedDate, sO);
                                 }
                               },
@@ -632,6 +1188,77 @@ class _AppointmentState extends State<Appointment> {
             //   trailing: Icon(Icons.timer),
             //   onTap: _pickTime,
             // ),
+            FutureBuilder<String>(
+              future: CheckAvailablity(availability),
+              key: UniqueKey(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Container(
+                    child: snapshot.data == 'Available'
+                        ? Row(
+                            children: [
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Icon(
+                                Icons.check_outlined,
+                                color: Colors.greenAccent,
+                                size: 35,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Available",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.lightBlueAccent),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('(' +
+                                  ScheduleObj.fname +
+                                  ' ' +
+                                  ScheduleObj.lname +
+                                  ' Is available)'),
+                            ],
+                          )
+                        : snapshot.data == 'Not-Avaliable'
+                            ? Row(
+                                children: [
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.close_outlined,
+                                    color: Colors.red,
+                                    size: 35,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Not-Available",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.lightBlueAccent),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text('(Please select another Time slot)'),
+                                ],
+                              )
+                            : Text(" "),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('${snapshot.error}');
+                }
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            ),
             Container(
               height: 60,
               width: 200,
@@ -651,9 +1278,7 @@ class _AppointmentState extends State<Appointment> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
-                  sendData();
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => hhcHome()));
+                  showAlertDialog(context);
                 },
               ),
             ),
@@ -663,28 +1288,28 @@ class _AppointmentState extends State<Appointment> {
     );
   }
 
-  Future<Null> _pickTime() async {
-    TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: _time,
-        builder: (BuildContext context, Widget? child) {
-          return Theme(
-            data: ThemeData(),
-            child: MediaQuery(
-              data:
-                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-              child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: child!,
-              ),
-            ),
-          );
-        });
-    if (time != null)
-      setState(() {
-        _time = time;
-        SelectedTime = _time;
-      });
-    print(SelectedTime);
-  }
+  // Future<Null> _pickTime() async {
+  //   TimeOfDay? time = await showTimePicker(
+  //       context: context,
+  //       initialTime: _time,
+  //       builder: (BuildContext context, Widget? child) {
+  //         return Theme(
+  //           data: ThemeData(),
+  //           child: MediaQuery(
+  //             data:
+  //                 MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+  //             child: Directionality(
+  //               textDirection: TextDirection.ltr,
+  //               child: child!,
+  //             ),
+  //           ),
+  //         );
+  //       });
+  //   if (time != null)
+  //     setState(() {
+  //       _time = time;
+  //       SelectedTime = _time;
+  //     });
+  //   print(SelectedTime);
+  // }
 }

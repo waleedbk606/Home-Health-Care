@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Users.dart';
+import 'package:hhc/Screens/Home.dart';
 import 'package:hhc/Screens/Login.dart';
+import 'package:hhc/Screens/UserAppointments.dart';
 
 class NavDrawer extends StatefulWidget {
   final User obj;
@@ -39,17 +41,42 @@ class _NavDrawerState extends State<NavDrawer> {
             title: Text('Welcome'),
             onTap: () => {},
           ),*/
+          // ListTile(
+          //   leading: Icon(Icons.verified_user),
+          //   title: Text('Profile'),
+          //   onTap: () => {Navigator.of(context).pop()},
+          // ),
           ListTile(
-            leading: Icon(Icons.verified_user),
-            title: Text('Profile'),
-            onTap: () => {Navigator.of(context).pop()},
+            leading: Icon(
+              Icons.home,
+            ),
+            title: Text('Home'),
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => hhcHome(
+                    username: object.username,
+                    password: object.password,
+                  ),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(
               Icons.watch_later,
             ),
             title: Text('Appointments'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserAppoint(
+                          obj: object,
+                        )),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(

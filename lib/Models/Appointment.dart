@@ -51,7 +51,7 @@ class Appointment {
   String timeslot;
   String timeduration;
   String status;
-  dynamic ratings;
+  int ratings;
 
   factory Appointment.fromJson(Map<String, dynamic> json) => Appointment(
         aid: json["aid"],
