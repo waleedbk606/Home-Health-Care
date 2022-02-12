@@ -24,7 +24,6 @@ class _AddEmpState extends State<AddEmp> {
     "Nurse",
     "Physio",
     "Vaccinator",
-    "General Physician",
   ];
   String selectedName = "Nurse";
   TextEditingController FnameController = TextEditingController();

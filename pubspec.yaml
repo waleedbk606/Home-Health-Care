@@ -22,6 +22,9 @@ environment:
 
 dependencies:
   table_calendar: ^3.0.2
+  rating_dialog: ^1.0.0
+  google_maps_flutter: ^2.1.1
+  location: ^3.0.2
   flutter:
     sdk: flutter
 

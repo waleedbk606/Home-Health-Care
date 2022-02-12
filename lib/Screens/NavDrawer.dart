@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hhc/Models/Users.dart';
 import 'package:hhc/Screens/Home.dart';
 import 'package:hhc/Screens/Login.dart';
+import 'package:hhc/Screens/Records.dart';
 import 'package:hhc/Screens/UserAppointments.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class NavDrawer extends StatefulWidget {
   final User obj;
+
   const NavDrawer({Key? key, required this.obj}) : super(key: key);
 
   @override
@@ -14,6 +17,13 @@ class NavDrawer extends StatefulWidget {
 
 class _NavDrawerState extends State<NavDrawer> {
   late User object = widget.obj;
+  // void logoutUser() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.clear();
+  //   Navigator.of(context)
+  //       .pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -72,9 +82,10 @@ class _NavDrawerState extends State<NavDrawer> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => UserAppoint(
-                          obj: object,
-                        )),
+                  builder: (context) => UserAppoint(
+                    obj: object,
+                  ),
+                ),
               ),
             },
           ),
@@ -83,12 +94,22 @@ class _NavDrawerState extends State<NavDrawer> {
               Icons.content_paste,
             ),
             title: Text('Records'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Records(
+                    obj: object,
+                  ),
+                ),
+              ),
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () => {
+              // logoutUser(),
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => LoginPage()))
             },

@@ -284,7 +284,7 @@ class _OrgRequestState extends State<OrgRequest> {
       child: MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: Center(child: Text("Request panal")),
+            title: Center(child: Text("Request panel")),
             bottom: const TabBar(
               tabs: [
                 Tab(

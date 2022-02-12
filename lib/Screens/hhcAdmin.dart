@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
+import 'package:hhc/Screens/Map.dart';
 import 'package:hhc/Screens/OrgRequest.dart';
 import 'package:hhc/Screens/UpdateEmp.dart';
 import 'package:hhc/Urls.dart';
@@ -233,7 +234,7 @@ class _hhcAdminState extends State<hhcAdmin> {
                                           Row(
                                             children: [
                                               Container(
-                                                width: 270,
+                                                width: 250,
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
@@ -355,98 +356,23 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                         ),
                                                       ],
                                                     ),
-                                                    SizedBox(
-                                                      height: 30,
-                                                    ),
+                                                    // SizedBox(
+                                                    //   height: 30,
+                                                    // ),
                                                   ],
                                                 ),
                                               ),
                                               Container(
-                                                width: 100,
+                                                width: 55,
                                                 height: 110,
                                                 child: Column(
                                                   children: [
-                                                    SizedBox(
-                                                      width: 30,
-                                                    ),
-                                                    // Container(
-                                                    //   height: 30,
-                                                    //   width: 60,
-                                                    //   child: TextButton(
-                                                    //     style: ButtonStyle(
-                                                    //       backgroundColor:
-                                                    //           MaterialStateProperty
-                                                    //               .all<Color>(
-                                                    //                   Colors
-                                                    //                       .blue),
-                                                    //       shape: MaterialStateProperty
-                                                    //           .all<
-                                                    //               RoundedRectangleBorder>(
-                                                    //         RoundedRectangleBorder(
-                                                    //           borderRadius:
-                                                    //               BorderRadius
-                                                    //                   .circular(
-                                                    //                       30.0),
-                                                    //         ),
-                                                    //       ),
-                                                    //     ),
-                                                    //     child: Row(
-                                                    //       children: [
-                                                    //         Icon(
-                                                    //           Icons
-                                                    //               .manage_accounts_rounded,
-                                                    //           color:
-                                                    //               Colors.white,
-                                                    //           size: 10,
-                                                    //         ),
-                                                    //         Text(
-                                                    //           "Update",
-                                                    //           style: TextStyle(
-                                                    //             fontSize: 10,
-                                                    //             color: Colors
-                                                    //                 .white,
-                                                    //           ),
-                                                    //         ),
-                                                    //       ],
-                                                    //     ),
-                                                    //     onPressed: () {
-                                                    //       eid = snapshot
-                                                    //           .data![index].eid;
-                                                    //       print(eid);
-                                                    //       if (eid != null) {
-                                                    //         Navigator.push(
-                                                    //           context,
-                                                    //           MaterialPageRoute(
-                                                    //             builder:
-                                                    //                 (context) =>
-                                                    //                     UpdateEmp(
-                                                    //               id: eid,
-                                                    //               OrgName: snapshot
-                                                    //                   .data![
-                                                    //                       index]
-                                                    //                   .orgName,
-                                                    //               Department: snapshot
-                                                    //                   .data![
-                                                    //                       index]
-                                                    //                   .department,
-                                                    //               Status: snapshot
-                                                    //                   .data![
-                                                    //                       index]
-                                                    //                   .status,
-                                                    //               obj: orgobj,
-                                                    //             ),
-                                                    //           ),
-                                                    //         );
-                                                    //       }
-                                                    //     },
-                                                    //   ),
-                                                    // ),
                                                     SizedBox(
                                                       height: 30,
                                                     ),
                                                     Container(
                                                       height: 30,
-                                                      width: 60,
+                                                      width: 80,
                                                       child: TextButton(
                                                         style: ButtonStyle(
                                                           backgroundColor:
@@ -580,7 +506,7 @@ class _hhcAdminState extends State<hhcAdmin> {
                                 return ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: snapshot.data!.length,
+                                  itemCount: snapshot.data!.length - 1,
                                   itemBuilder: (context, index) {
                                     return Container(
                                       child: Column(
@@ -608,12 +534,19 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                   ? Colors.blue[50]
                                                   : Colors.white,
                                               child: Container(
-                                                height: 80,
+                                                height: 100,
                                                 child: Column(
                                                   children: [
                                                     Text(
-                                                      snapshot
-                                                          .data![index].name,
+                                                      snapshot.data![index]
+                                                                  .name ==
+                                                              'Independent'
+                                                          ? snapshot
+                                                              .data![index + 1]
+                                                              .name
+                                                          : snapshot
+                                                              .data![index]
+                                                              .name,
                                                       textAlign:
                                                           TextAlign.right,
                                                       style: TextStyle(
@@ -627,8 +560,15 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                       height: 5,
                                                     ),
                                                     Text(
-                                                      snapshot
-                                                          .data![index].address,
+                                                      snapshot.data![index]
+                                                                  .name ==
+                                                              'Independent'
+                                                          ? snapshot
+                                                              .data![index + 1]
+                                                              .address
+                                                          : snapshot
+                                                              .data![index]
+                                                              .address,
                                                       textAlign:
                                                           TextAlign.right,
                                                       style: TextStyle(
@@ -637,9 +577,6 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                         //color: Colors.teal,
                                                       ),
                                                     ),
-                                                    SizedBox(
-                                                      height: 5,
-                                                    ),
                                                     Row(
                                                       children: [
                                                         SizedBox(
@@ -647,7 +584,16 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                         ),
                                                         Text(
                                                           snapshot.data![index]
-                                                              .phonenum,
+                                                                      .name ==
+                                                                  'Independent'
+                                                              ? snapshot
+                                                                  .data![
+                                                                      index + 1]
+                                                                  .phonenum
+                                                              : snapshot
+                                                                  .data![
+                                                                      index + 1]
+                                                                  .phonenum,
                                                           textAlign:
                                                               TextAlign.right,
                                                           style: TextStyle(
@@ -664,12 +610,40 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                         ),
                                                         Text(
                                                           snapshot.data![index]
-                                                              .city,
+                                                                      .name ==
+                                                                  'Independent'
+                                                              ? snapshot
+                                                                  .data![
+                                                                      index + 1]
+                                                                  .city
+                                                              : snapshot
+                                                                  .data![index]
+                                                                  .city,
                                                           textAlign:
                                                               TextAlign.right,
                                                           style: TextStyle(
                                                             fontSize: 15,
                                                           ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        IconButton(
+                                                          icon: new Icon(
+                                                            Icons.location_on,
+                                                            color: Colors.blue,
+                                                            //size: 23,
+                                                          ),
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        Map(),
+                                                              ),
+                                                            );
+                                                          },
                                                         ),
                                                       ],
                                                     )

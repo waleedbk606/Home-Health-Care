@@ -8,7 +8,7 @@ import 'Home.dart';
 import 'OrgAdmin.dart';
 import 'Signup.dart';
 import 'package:http/http.dart' as http;
-
+// import 'package:shared_preferences/shared_preferences.dart';
 import 'hhcAdmin.dart';
 
 class LoginPage extends StatefulWidget {
@@ -81,9 +81,11 @@ class _State extends State<LoginPage> {
       'Password': passwordController.text,
     });
     if (res.statusCode == 200) {
+      // SharedPreferences prefs = await SharedPreferences.getInstance();
+      // var status = prefs.getBool('isLoggedIn') ?? false;
+      //print(status);
       print(res.body);
       var data = json.decode(res.body);
-      //await FlutterSession().set('token', usernameController.text);
       role = data['Role'];
       print(role);
       if (role == 'User      ') {

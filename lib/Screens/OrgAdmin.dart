@@ -209,7 +209,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                             ),
                           ),
                           SizedBox(
-                            width: 100,
+                            width: 50,
                           ),
                           TextButton(
                             style: ButtonStyle(
@@ -290,7 +290,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                                           Row(
                                             children: [
                                               Container(
-                                                width: 270,
+                                                width: 225,
                                                 child: Column(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
@@ -611,7 +611,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                             style: TextStyle(
                               color: Colors.teal,
                               fontWeight: FontWeight.w500,
-                              fontSize: 33,
+                              fontSize: 25,
                             ),
                           ),
                           SizedBox(
@@ -683,7 +683,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                                       child: Row(
                                         children: [
                                           Container(
-                                            width: 270,
+                                            width: 250,
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -855,7 +855,7 @@ class _OrgAdminState extends State<OrgAdmin> {
                                                   ),
                                                 ),
                                                 SizedBox(
-                                                  height: 30,
+                                                  height: 10,
                                                 ),
                                                 Container(
                                                   height: 30,

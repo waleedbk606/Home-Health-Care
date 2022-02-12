@@ -1,26 +1,23 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Appointment.dart';
 import 'package:hhc/Models/Users.dart';
+import 'package:hhc/Screens/NavDrawer.dart';
 import 'package:http/http.dart' as http;
-import 'dart:async';
+import 'package:rating_dialog/rating_dialog.dart';
 import '../Urls.dart';
-import 'NavDrawer.dart';
 
-class UserAppoint extends StatefulWidget {
+class Records extends StatefulWidget {
   final User obj;
-
-  const UserAppoint({Key? key, required this.obj}) : super(key: key);
+  const Records({Key? key, required this.obj}) : super(key: key);
 
   @override
-  _UserAppointState createState() => _UserAppointState();
+  _RecordsState createState() => _RecordsState();
 }
 
-class _UserAppointState extends State<UserAppoint> {
-  Future<List<Appointment>> GetPendingAppointments() async {
+class _RecordsState extends State<Records> {
+  Future<List<Appointment>> GetCompletedAppointments() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetAppointments?uid=${widget.obj.uid}'));
+        'http://${Url.ip}/HhcApi/api/Login/GetCompletedAppointments?uid=${widget.obj.uid}'));
     if (response.statusCode == 200) {
       List<Appointment> paresd = appointmentFromJson(response.body);
       return paresd;
@@ -29,11 +26,22 @@ class _UserAppointState extends State<UserAppoint> {
     }
   }
 
+  Future<void> UpdateRating(int aid, String rate) async {
+    final response = await http.patch(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/Login/UpdateRatings?aid=${aid}&rating=${rate}'));
+    if (response.statusCode == 200) {
+      print(response.body);
+    } else {
+      throw Exception('Failed to load album');
+    }
+  }
+
+  var Rating = 0;
   late Future<List<Appointment>> getApp;
   @override
   void initState() {
     super.initState();
-    getApp = GetPendingAppointments();
+    getApp = GetCompletedAppointments();
   }
 
   @override
@@ -41,7 +49,7 @@ class _UserAppointState extends State<UserAppoint> {
     return Scaffold(
       drawer: NavDrawer(obj: widget.obj),
       appBar: AppBar(
-        title: Text('             Appointments'),
+        title: Text('         Appointments Record'),
         backgroundColor: Colors.blueAccent,
       ),
       body: SafeArea(
@@ -58,7 +66,7 @@ class _UserAppointState extends State<UserAppoint> {
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         return Container(
-                          height: 400,
+                          height: 430,
                           width: MediaQuery.of(context).size.width,
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
@@ -73,7 +81,7 @@ class _UserAppointState extends State<UserAppoint> {
                             children: [
                               Container(
                                 width: 150,
-                                height: 400,
+                                height: 430,
                                 padding: EdgeInsets.all(8),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,11 +203,24 @@ class _UserAppointState extends State<UserAppoint> {
                                         ),
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Container(
+                                      height: 25,
+                                      child: Text(
+                                        "Ratings:",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
                               Container(
-                                height: 375,
+                                height: 405,
+                                //color: Colors.deepOrangeAccent,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -284,96 +305,95 @@ class _UserAppointState extends State<UserAppoint> {
                                       height: 10,
                                     ),
                                     Container(
-                                        height: 25,
-                                        child: snapshot.data![index].timeslot ==
-                                                'S1'
-                                            ? Text(
-                                                "6am-9am (3hr)",
-                                                style: TextStyle(
-                                                  color: Colors.teal,
-                                                  fontSize: 18,
-                                                ),
-                                              )
-                                            : snapshot.data![index].timeslot ==
-                                                    'S2'
-                                                ? Text(
-                                                    "9am-12pm (3hr)",
-                                                    style: TextStyle(
-                                                      color: Colors.teal,
-                                                      fontSize: 18,
-                                                    ),
-                                                  )
-                                                : snapshot.data![index]
-                                                            .timeslot ==
-                                                        'S3'
-                                                    ? Text(
-                                                        "12pm-3pm (3hr)",
-                                                        style: TextStyle(
-                                                          color: Colors.teal,
-                                                          fontSize: 18,
-                                                        ),
-                                                      )
-                                                    : snapshot.data![index]
-                                                                .timeslot ==
-                                                            'S4'
-                                                        ? Text(
-                                                            "3pm-6pm (3hr)",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.teal,
-                                                              fontSize: 18,
-                                                            ),
-                                                          )
-                                                        : snapshot.data![index]
-                                                                    .timeslot ==
-                                                                'S5'
-                                                            ? Text(
-                                                                "6pm-9pm (3hr)",
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .teal,
-                                                                  fontSize: 18,
-                                                                ),
-                                                              )
-                                                            : snapshot
-                                                                        .data![
-                                                                            index]
-                                                                        .timeslot ==
-                                                                    'S6'
-                                                                ? Text(
-                                                                    "9pm-12am (3hr)",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      color: Colors
-                                                                          .teal,
-                                                                      fontSize:
-                                                                          18,
+                                      height: 25,
+                                      child: snapshot.data![index].timeslot ==
+                                              'S1        '
+                                          ? Text(
+                                              "6am-9am (3hr)",
+                                              style: TextStyle(
+                                                color: Colors.teal,
+                                                fontSize: 18,
+                                              ),
+                                            )
+                                          : snapshot.data![index].timeslot ==
+                                                  'S2        '
+                                              ? Text(
+                                                  "9am-12pm (3hr)",
+                                                  style: TextStyle(
+                                                    color: Colors.teal,
+                                                    fontSize: 18,
+                                                  ),
+                                                )
+                                              : snapshot.data![index]
+                                                          .timeslot ==
+                                                      'S3        '
+                                                  ? Text(
+                                                      "12pm-3pm (3hr)",
+                                                      style: TextStyle(
+                                                        color: Colors.teal,
+                                                        fontSize: 18,
+                                                      ),
+                                                    )
+                                                  : snapshot.data![index]
+                                                              .timeslot ==
+                                                          'S4        '
+                                                      ? Text(
+                                                          "3pm-6pm (3hr)",
+                                                          style: TextStyle(
+                                                            color: Colors.teal,
+                                                            fontSize: 18,
+                                                          ),
+                                                        )
+                                                      : snapshot.data![index]
+                                                                  .timeslot ==
+                                                              'S5        '
+                                                          ? Text(
+                                                              "6pm-9pm (3hr)",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.teal,
+                                                                fontSize: 18,
+                                                              ),
+                                                            )
+                                                          : snapshot
+                                                                      .data![
+                                                                          index]
+                                                                      .timeslot ==
+                                                                  'S6        '
+                                                              ? Text(
+                                                                  "9pm-12am (3hr)",
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .teal,
+                                                                    fontSize:
+                                                                        18,
+                                                                  ),
+                                                                )
+                                                              : snapshot.data![index]
+                                                                          .timeslot ==
+                                                                      'S7        '
+                                                                  ? Text(
+                                                                      "12am-3am (3hr)",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .teal,
+                                                                        fontSize:
+                                                                            18,
+                                                                      ),
+                                                                    )
+                                                                  : Text(
+                                                                      "3am-6am (3hr)",
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .teal,
+                                                                        fontSize:
+                                                                            18,
+                                                                      ),
                                                                     ),
-                                                                  )
-                                                                : snapshot.data![index]
-                                                                            .timeslot ==
-                                                                        'S7'
-                                                                    ? Text(
-                                                                        "12am-3am (3hr)",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.teal,
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      )
-                                                                    : Text(
-                                                                        "3am-6am (3hr)",
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.teal,
-                                                                          fontSize:
-                                                                              18,
-                                                                        ),
-                                                                      )),
+                                    ),
                                     SizedBox(
                                       height: 10,
                                     ),
@@ -413,6 +433,36 @@ class _UserAppointState extends State<UserAppoint> {
                                         ),
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                        child: snapshot.data![index].ratings ==
+                                                0
+                                            ? Container(
+                                                height: 35,
+                                                color: Colors.lightBlue,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    show(snapshot
+                                                        .data![index].aid);
+                                                  },
+                                                  child: Text(
+                                                    'Give Ratings',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : Text(
+                                                snapshot.data![index].ratings
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  color: Colors.teal,
+                                                  fontSize: 18,
+                                                ),
+                                              )),
                                   ],
                                 ),
                               ),
@@ -433,5 +483,42 @@ class _UserAppointState extends State<UserAppoint> {
         ),
       ),
     );
+  }
+
+  void show(int aid) {
+    showDialog(
+        context: context,
+        barrierDismissible: true, // set to false if you want to force a rating
+        builder: (context) {
+          return RatingDialog(
+            icon: const Icon(
+              Icons.star,
+              size: 100,
+              color: Colors.blue,
+            ), // set your own image/icon widget
+            title: "Please Rate Our Service",
+            description: "Tap a star to give your rating.",
+            submitButton: "SUBMIT",
+            // alternativeButton: "Contact us instead?", // optional
+            // positiveComment: "We are so happy to hear 😍", // optional
+            // negativeComment: "We're sad to hear 😭", // optional
+            accentColor: Colors.blue, // optional
+            onSubmitPressed: (int rating) {
+              Rating = rating;
+              print("onSubmitPressed: rating = $Rating");
+              UpdateRating(aid, Rating.toString());
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Records(obj: widget.obj)),
+              );
+              // TODO: open the app's page on Google Play / Apple App Store
+            },
+            onAlternativePressed: () {
+              print("onAlternativePressed: do something");
+              // TODO: maybe you want the user to contact you instead of rating a bad review
+            },
+          );
+        });
   }
 }

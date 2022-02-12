@@ -7,6 +7,8 @@ import 'dart:convert';
 List<Schedule> scheduleFromJson(String str) =>
     List<Schedule>.from(json.decode(str).map((x) => Schedule.fromJson(x)));
 
+Schedule schedulefromJson(String str) => Schedule.fromJson(json.decode(str));
+
 String scheduleToJson(List<Schedule> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 

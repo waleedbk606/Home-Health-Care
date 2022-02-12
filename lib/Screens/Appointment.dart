@@ -4,7 +4,6 @@ import 'package:hhc/Models/Schedule.dart';
 import 'package:hhc/Models/Users.dart';
 import 'package:hhc/Screens/Home.dart';
 import '../Urls.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Appointment extends StatefulWidget {
@@ -27,9 +26,13 @@ class Appointment extends StatefulWidget {
 
 class _AppointmentState extends State<Appointment> {
   DateTime _date = DateTime.now();
+  DateTime Tempdate = DateTime.now();
   TimeOfDay _time = TimeOfDay.now();
   String SelectedDate = '';
+  String SelectedTime = '';
   String selectedgender = 'Male';
+  String repeat = 'Once';
+  String DWM = 'Daily';
   String Shift = 'Morning';
   Schedule ScheduleObj = new Schedule(
       sid: 0,
@@ -54,9 +57,19 @@ class _AppointmentState extends State<Appointment> {
     '12am-3am',
     '3am-6am',
   ];
+  List<String> dates = [];
+  int repetedcount = 0;
+  int availFail = 0;
   String selectedTimeSlot = "6am-9am";
   String sO = '';
   String availability = " ";
+  List<int> dailyList = [3, 4, 5, 6, 7];
+  int selDay = 3;
+  int selWeek = 3;
+  int selMonth = 1;
+  List<int> WeeklyList = [3, 4, 5, 6, 7];
+  List<int> MontylyList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  bool repeated = false;
   TextEditingController FnameController = TextEditingController();
   TextEditingController LnameController = TextEditingController();
   TextEditingController AgeController = TextEditingController();
@@ -73,6 +86,7 @@ class _AppointmentState extends State<Appointment> {
   @override
   void initState() {
     super.initState();
+    repeated = false;
     _date = DateTime.now();
   }
 
@@ -104,6 +118,8 @@ class _AppointmentState extends State<Appointment> {
             _date.month.toString() +
             '-' +
             _date.year.toString();
+
+        print(_date.add(Duration(days: 7)));
         print(
           SelectedDate.toString(),
         );
@@ -119,6 +135,29 @@ class _AppointmentState extends State<Appointment> {
             : 'Not-Avaliable';
     return b;
   }
+
+  // void daily(String shift, String data, String time, int lenght) {
+  //   for (int i = 0; i < lenght; i++) {
+  //     setState(() {
+  //       if (ScheduleObj != null) {
+  //         ScheduleObj.eid = 0;
+  //         ScheduleObj.sid = 0;
+  //         ScheduleObj.fname = '';
+  //         ScheduleObj.lname = '';
+  //         ScheduleObj.date = '';
+  //         ScheduleObj.dep = '';
+  //         ScheduleObj.noLeave = 0;
+  //         ScheduleObj.noOfpndApnt = 0;
+  //         ScheduleObj.orgname = '';
+  //         ScheduleObj.ratings = 0;
+  //         ScheduleObj.shift = '';
+  //         ScheduleObj.timeslot = '';
+  //       }
+  //     });
+  //     GetSchedule(shift, data, time);
+  //     dailyList.add(ScheduleObj);
+  //   }
+  // }
 
   Future<Schedule> GetSchedule(String shift, String data, String time) async {
     final response = await http.get(Uri.parse(
@@ -285,7 +324,7 @@ class _AppointmentState extends State<Appointment> {
       },
     );
     if (res.statusCode == 200) {
-      print(res.body);
+      print("Appointment add");
     }
   }
 
@@ -308,7 +347,7 @@ class _AppointmentState extends State<Appointment> {
       },
     );
     if (res.statusCode == 200) {
-      print(res.body);
+      print("Null data ADD");
       UpdateOrg(ScheduleObj.eid);
     }
   }
@@ -331,7 +370,7 @@ class _AppointmentState extends State<Appointment> {
       },
     );
     if (res.statusCode == 200) {
-      print(res.body);
+      print("Given data ADD");
       UpdateOrg(ScheduleObj.eid);
     }
   }
@@ -357,8 +396,7 @@ class _AppointmentState extends State<Appointment> {
     Widget continueButton = TextButton(
       child: Text("Confirm"),
       onPressed: () {
-        if (ScheduleObj.date == 'NoDate' &&
-            ScheduleObj.timeslot == 'S0        ') {
+        if (ScheduleObj.date == 'NoDate' && ScheduleObj.timeslot == 'S0') {
           sendAppointment();
           NullDate(ScheduleObj.sid);
           MaterialPageRoute(
@@ -397,7 +435,7 @@ class _AppointmentState extends State<Appointment> {
         children: [
           Container(
             width: 100,
-            height: 340,
+            height: 350,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -406,67 +444,74 @@ class _AppointmentState extends State<Appointment> {
                   child: Text("Name:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Age:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Gender:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 50,
                   child: Text("Address:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 3,
                 ),
                 Container(
                   height: 25,
                   child: Text("Service:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Date:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Time:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Employee:"),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text("Organization:"),
                 ),
+                SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  height: 25,
+                  child: Text("Charges:"),
+                ),
               ],
             ),
           ),
           Container(
-            width: 150,
-            height: 340,
+            width: 130,
+            height: 350,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -476,11 +521,12 @@ class _AppointmentState extends State<Appointment> {
                     FnameController.text + ' ' + LnameController.text,
                     style: TextStyle(
                       color: Colors.teal,
+                      fontSize: 13,
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
@@ -492,7 +538,7 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
@@ -504,7 +550,7 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 50,
@@ -516,7 +562,7 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 3,
                 ),
                 Container(
                   height: 25,
@@ -528,7 +574,7 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
@@ -540,7 +586,7 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                     height: 25,
@@ -600,7 +646,7 @@ class _AppointmentState extends State<Appointment> {
                                                     ),
                                                   )),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
@@ -612,12 +658,24 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 8,
                 ),
                 Container(
                   height: 25,
                   child: Text(
                     widget.org,
+                    style: TextStyle(
+                      color: Colors.teal,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  height: 25,
+                  child: Text(
+                    'Rs.500',
                     style: TextStyle(
                       color: Colors.teal,
                     ),
@@ -631,6 +689,486 @@ class _AppointmentState extends State<Appointment> {
       actions: [
         cancelButton,
         continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  showRepeatedAlertDialog(
+      BuildContext context, List<String> date, String Time, int dOrY) {
+    setState(() {});
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () {
+        setState(() {
+          dates = [];
+          availability = '';
+          availFail = 0;
+        });
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Confirm"),
+      onPressed: () {
+        GetSchedule(Shift, SelectedDate, sO);
+        if (ScheduleObj.date == 'NoDate' && ScheduleObj.timeslot == 'S0') {
+          sendAppointment();
+          NullDate(ScheduleObj.sid);
+          MaterialPageRoute(
+            builder: (context) => hhcHome(
+                username: widget.userObj.username,
+                password: widget.userObj.password),
+          );
+        } else {
+          sendAppointment();
+          GivenDate();
+          print("Data Send");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => hhcHome(
+                username: widget.userObj.username,
+                password: widget.userObj.password,
+              ),
+            ),
+          );
+        }
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Center(
+        child: Text(
+          "Appointments",
+          style: TextStyle(
+            color: Colors.blue,
+          ),
+        ),
+      ),
+      content: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 95,
+                height: 210,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 25,
+                      child: Text("Name:"),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text("Age:"),
+                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //   height: 25,
+                    //   child: Text("Gender:"),
+                    // ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 50,
+                      child: Text("Address:"),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text("Service:"),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text("Organization:"),
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text("Charges:"),
+                    ),
+
+                    //TODO: Render Repeated Date and time
+
+                    // Container(
+                    //   height: 25,
+                    //   child: Text("Date:"),
+                    // ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //   height: 25,
+                    //   child: Text("Time:"),
+                    // ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //   height: 25,
+                    //   child: Text("Employee:"),
+                    // ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 135,
+                height: 210,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 25,
+                      child: Text(
+                        FnameController.text + ' ' + LnameController.text,
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text(
+                        AgeController.text,
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 50,
+                      child: Text(
+                        AddressController.text,
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text(
+                        widget.service,
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+
+                    // Container(
+                    //   height: 25,
+                    //   child: Text(
+                    //     SelectedDate,
+                    //     style: TextStyle(
+                    //       color: Colors.teal,
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //     height: 25,
+                    //     child: sO == 'S1'
+                    //         ? Text(
+                    //             "6am-9am (3hr)",
+                    //             style: TextStyle(
+                    //               color: Colors.teal,
+                    //             ),
+                    //           )
+                    //         : sO == 'S2'
+                    //             ? Text(
+                    //                 "9am-12pm (3hr)",
+                    //                 style: TextStyle(
+                    //                   color: Colors.teal,
+                    //                 ),
+                    //               )
+                    //             : sO == 'S3'
+                    //                 ? Text(
+                    //                     "12pm-3pm (3hr)",
+                    //                     style: TextStyle(
+                    //                       color: Colors.teal,
+                    //                     ),
+                    //                   )
+                    //                 : sO == 'S4'
+                    //                     ? Text(
+                    //                         "3pm-6pm (3hr)",
+                    //                         style: TextStyle(
+                    //                           color: Colors.teal,
+                    //                         ),
+                    //                       )
+                    //                     : sO == 'S5'
+                    //                         ? Text(
+                    //                             "6pm-9pm (3hr)",
+                    //                             style: TextStyle(
+                    //                               color: Colors.teal,
+                    //                             ),
+                    //                           )
+                    //                         : sO == 'S6'
+                    //                             ? Text(
+                    //                                 "9pm-12am (3hr)",
+                    //                                 style: TextStyle(
+                    //                                   color: Colors.teal,
+                    //                                 ),
+                    //                               )
+                    //                             : sO == 'S7'
+                    //                                 ? Text(
+                    //                                     "12am-3am (3hr)",
+                    //                                     style: TextStyle(
+                    //                                       color: Colors.teal,
+                    //                                     ),
+                    //                                   )
+                    //                                 : Text(
+                    //                                     "3am-6am (3hr)",
+                    //                                     style: TextStyle(
+                    //                                       color: Colors.teal,
+                    //                                     ),
+                    //                                   )),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //   height: 25,
+                    //   child: Text(
+                    //     ScheduleObj.fname + ' ' + ScheduleObj.lname,
+                    //     style: TextStyle(
+                    //       color: Colors.teal,
+                    //     ),
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    Container(
+                      height: 25,
+                      child: Text(
+                        widget.org,
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 25,
+                      child: Text(
+                        'Rs.500',
+                        style: TextStyle(
+                          color: Colors.teal,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Container(
+            width: 230,
+            child: Column(
+              children: [
+                Row(children: [
+                  Text(
+                    'Date',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 50,
+                  ),
+                  Text(
+                    'Time:',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                ]),
+                SizedBox(
+                  height: 2,
+                ),
+                ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: dOrY,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 80,
+                                  child: Text(
+                                    date[index],
+                                    // style: TextStyle(
+                                    //   fontSize: 12,
+                                    // ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 90,
+                                  height: 30,
+                                  child: availFail == 0
+                                      ? Center(
+                                          child: Text(
+                                            Time == 'S1'
+                                                ? "6am-9am (3hr)"
+                                                : Time == 'S2'
+                                                    ? "9am-12pm (3hr)"
+                                                    : Time == 'S3'
+                                                        ? "12pm-3pm (3hr)"
+                                                        : Time == 'S4'
+                                                            ? "3pm-6pm (3hr)"
+                                                            : Time == 'S5'
+                                                                ? "6pm-9pm (3hr)"
+                                                                : Time == 'S6'
+                                                                    ? "9pm-12am (3hr)"
+                                                                    : Time ==
+                                                                            'S7'
+                                                                        ? "12am-3am (3hr)"
+                                                                        : "3am-6am (3hr)",
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
+                                          width: 90,
+                                          child: DropdownButton(
+                                            autofocus: true,
+                                            focusColor: Colors.white,
+                                            // isExpanded: true,
+                                            onChanged: (String? value) {
+                                              setState(
+                                                () {
+                                                  selectedTimeSlot = value!;
+                                                  selectedTimeSlot == "6am-9am"
+                                                      ? SelectedTime = 'S1'
+                                                      : selectedTimeSlot ==
+                                                              "9am-12pm"
+                                                          ? SelectedTime = 'S2'
+                                                          : selectedTimeSlot ==
+                                                                  "12pm-3pm"
+                                                              ? SelectedTime =
+                                                                  'S3'
+                                                              : selectedTimeSlot ==
+                                                                      "3pm-6pm"
+                                                                  ? SelectedTime =
+                                                                      'S4'
+                                                                  : selectedTimeSlot ==
+                                                                          "6pm-9pm"
+                                                                      ? SelectedTime =
+                                                                          'S5'
+                                                                      : selectedTimeSlot ==
+                                                                              "9pm-12am"
+                                                                          ? SelectedTime =
+                                                                              'S6'
+                                                                          : selectedTimeSlot == "12am-3am"
+                                                                              ? SelectedTime = 'S7'
+                                                                              : selectedTimeSlot == "3am-6am"
+                                                                                  ? SelectedTime = 'S8'
+                                                                                  : " ";
+                                                  print(SelectedTime);
+                                                },
+                                              );
+                                            },
+                                            value: selectedTimeSlot,
+                                            items: timeslot.map((item) {
+                                              return DropdownMenuItem(
+                                                child: Text(
+                                                  item,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: Colors.teal,
+                                                  ),
+                                                ),
+                                                value: item,
+                                              );
+                                            }).toList(),
+                                            dropdownColor: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Container(
+                                  height: 30,
+                                  width: 45,
+                                  color: Colors.blue,
+                                  child: TextButton(
+                                    child: Text(
+                                      'Confirm',
+                                      style: TextStyle(
+                                        fontSize: 8,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      SelectedDate = date[index];
+                                      GetSchedule(Shift, SelectedDate, sO);
+                                      if (ScheduleObj.date == 'NoDate' &&
+                                          ScheduleObj.timeslot == 'S0') {
+                                        sendAppointment();
+                                        NullDate(ScheduleObj.sid);
+                                      } else {
+                                        sendAppointment();
+                                        GivenDate();
+                                        print("Data Send");
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                        ],
+                      );
+                    }),
+              ],
+            ),
+          ),
+        ],
+      ),
+      actions: [
+        cancelButton,
+        //continueButton,
       ],
     );
 
@@ -684,6 +1222,54 @@ class _AppointmentState extends State<Appointment> {
                 ),
               ),
             ),
+
+            Container(
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 50,
+                  ),
+                  Text(
+                    'Male',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  Radio(
+                    groupValue: selectedgender,
+                    value: 'Male',
+                    onChanged: (String? val) {
+                      setState(() {
+                        selectedgender = val!;
+                        print(selectedgender);
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    width: 100,
+                  ),
+                  Text(
+                    'Female',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  Radio(
+                    groupValue: selectedgender,
+                    value: 'Female',
+                    onChanged: (String? val) {
+                      setState(() {
+                        selectedgender = val!;
+                        print(selectedgender);
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+
             Container(
               padding: EdgeInsets.all(10),
               child: TextField(
@@ -699,7 +1285,7 @@ class _AppointmentState extends State<Appointment> {
               child: Row(
                 children: [
                   Container(
-                    width: 330,
+                    width: 335,
                     child: TextField(
                       controller: AddressController,
                       decoration: InputDecoration(
@@ -708,87 +1294,76 @@ class _AppointmentState extends State<Appointment> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Container(
-                    height: 40,
-                    width: 50,
-                    color: Colors.blueAccent,
-                    child: Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                    ),
-                  ),
                 ],
               ),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Gender',
-                    ),
-                    Row(
-                      children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 40,
-                            ),
-                            Text(
-                              'Male',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.teal,
-                              ),
-                            ),
-                            Radio(
-                              groupValue: selectedgender,
-                              value: 'Male',
-                              onChanged: (String? val) {
-                                setState(() {
-                                  selectedgender = val!;
-                                  print(selectedgender);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: 100,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              'Female',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.teal,
-                              ),
-                            ),
-                            Radio(
-                              groupValue: selectedgender,
-                              value: 'Female',
-                              onChanged: (String? val) {
-                                setState(() {
-                                  selectedgender = val!;
-                                  print(selectedgender);
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
+            // Card(
+            //   child: Padding(
+            //     padding: const EdgeInsets.all(8.0),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         Text(
+            //           'Gender',
+            //         ),
+            //         Row(
+            //           children: [
+            //             Row(
+            //               children: [
+            //                 SizedBox(
+            //                   width: 30,
+            //                 ),
+            //                 Text(
+            //                   'Male',
+            //                   style: TextStyle(
+            //                     fontSize: 20,
+            //                     color: Colors.teal,
+            //                   ),
+            //                 ),
+            //                 Radio(
+            //                   groupValue: selectedgender,
+            //                   value: 'Male',
+            //                   onChanged: (String? val) {
+            //                     setState(() {
+            //                       selectedgender = val!;
+            //                       print(selectedgender);
+            //                     });
+            //                   },
+            //                 ),
+            //               ],
+            //             ),
+            //             SizedBox(
+            //               width: 60,
+            //             ),
+            //             Row(
+            //               children: [
+            //                 Text(
+            //                   'Female',
+            //                   style: TextStyle(
+            //                     fontSize: 20,
+            //                     color: Colors.teal,
+            //                   ),
+            //                 ),
+            //                 Radio(
+            //                   groupValue: selectedgender,
+            //                   value: 'Female',
+            //                   onChanged: (String? val) {
+            //                     setState(() {
+            //                       selectedgender = val!;
+            //                       print(selectedgender);
+            //                     });
+            //                   },
+            //                 ),
+            //               ],
+            //             ),
+            //           ],
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            //
             // Padding(
             //   padding: const EdgeInsets.all(16.0),
             //   child: TextFormField(
@@ -847,13 +1422,13 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
                 SizedBox(
-                  width: 30,
+                  width: 20,
                 ),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      width: 180,
+                      width: 140,
                       child: Center(
                         child: Text(
                           _date.day.toString() +
@@ -898,6 +1473,270 @@ class _AppointmentState extends State<Appointment> {
                 // ),
               ],
             ),
+            Container(
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 30,
+                  ),
+                  Text(
+                    'Once',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  Radio(
+                    groupValue: repeat,
+                    value: 'Once',
+                    onChanged: (String? val) {
+                      setState(() {
+                        repeat = val!;
+                        print(repeat);
+                        repeated = false;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    width: 80,
+                  ),
+                  Text(
+                    'Repeated',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.teal,
+                    ),
+                  ),
+                  Radio(
+                    groupValue: repeat,
+                    value: 'Repeated',
+                    onChanged: (String? val) {
+                      setState(() {
+                        repeat = val!;
+                        print(repeat);
+                        repeated = true;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Visibility(
+              visible: repeated == true ? true : false,
+              child: Container(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          'Daily',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        Radio(
+                          groupValue: DWM,
+                          value: 'Daily',
+                          onChanged: (String? val) {
+                            setState(() {
+                              DWM = val!;
+                              print(DWM);
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Text("Number of days:"),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Container(
+                          width: 50,
+                          child: DropdownButton(
+                            autofocus: true,
+                            focusColor: Colors.white,
+                            // isExpanded: true,
+                            onChanged: (int? value) {
+                              setState(
+                                () {
+                                  selDay = value!;
+                                  repetedcount = selDay;
+
+                                  for (int i = 0; i < selDay; i++) {
+                                    setState(() {
+                                      Tempdate =
+                                          _date.add(new Duration(days: i));
+                                      SelectedDate = Tempdate.day.toString() +
+                                          '-' +
+                                          Tempdate.month.toString() +
+                                          '-' +
+                                          Tempdate.year.toString();
+                                      print(SelectedDate);
+                                      dates.add(SelectedDate);
+                                      SelectedDate = '';
+                                      print(dates.elementAt(i));
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                            value: selDay,
+                            items: dailyList.map((item) {
+                              return DropdownMenuItem(
+                                child: Text(
+                                  item.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.teal,
+                                  ),
+                                ),
+                                value: item,
+                              );
+                            }).toList(),
+                            dropdownColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 15,
+                        ),
+                        Text(
+                          'Weekly',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        Radio(
+                          groupValue: DWM,
+                          value: 'Weekly',
+                          onChanged: (String? val) {
+                            setState(() {
+                              DWM = val!;
+                              print(DWM);
+                            });
+                          },
+                        ),
+                        SizedBox(
+                          width: 14,
+                        ),
+                        Text("Number of weeks:"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Container(
+                          width: 50,
+                          child: DropdownButton(
+                            autofocus: true,
+                            focusColor: Colors.white,
+                            // isExpanded: true,
+                            onChanged: (int? value) {
+                              setState(
+                                () {
+                                  selWeek = value!;
+                                  repetedcount = selWeek;
+                                },
+                              );
+                            },
+                            value: selWeek,
+                            items: WeeklyList.map((item) {
+                              return DropdownMenuItem(
+                                child: Text(
+                                  item.toString(),
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.teal,
+                                  ),
+                                ),
+                                value: item,
+                              );
+                            }).toList(),
+                            dropdownColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Row(
+                    //   children: [
+                    //     SizedBox(
+                    //       width: 15,
+                    //     ),
+                    //     Text(
+                    //       'Monthly',
+                    //       style: TextStyle(
+                    //         fontSize: 15,
+                    //         color: Colors.teal,
+                    //       ),
+                    //     ),
+                    //     Radio(
+                    //       groupValue: DWM,
+                    //       value: 'Monthly',
+                    //       onChanged: (String? val) {
+                    //         setState(() {
+                    //           DWM = val!;
+                    //           print(DWM);
+                    //         });
+                    //       },
+                    //     ),
+                    //     SizedBox(
+                    //       width: 9,
+                    //     ),
+                    //     Text("Number of months:"),
+                    //     SizedBox(
+                    //       width: 12,
+                    //     ),
+                    //     Container(
+                    //       width: 50,
+                    //       child: DropdownButton(
+                    //         autofocus: true,
+                    //         focusColor: Colors.white,
+                    //         // isExpanded: true,
+                    //         onChanged: (int? value) {
+                    //           setState(
+                    //             () {
+                    //               selMonth = value!;
+                    //             },
+                    //           );
+                    //         },
+                    //         value: selMonth,
+                    //         items: MontylyList.map((item) {
+                    //           return DropdownMenuItem(
+                    //             child: Text(
+                    //               item.toString(),
+                    //               style: TextStyle(
+                    //                 fontSize: 20,
+                    //                 color: Colors.teal,
+                    //               ),
+                    //             ),
+                    //             value: item,
+                    //           );
+                    //         }).toList(),
+                    //         dropdownColor: Colors.white,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                  ],
+                ),
+              ),
+            ),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -913,7 +1752,7 @@ class _AppointmentState extends State<Appointment> {
                         width: 10,
                       ),
                       Container(
-                        width: 230,
+                        width: 200,
                         child: DropdownButton(
                           autofocus: true,
                           focusColor: Colors.white,
@@ -948,7 +1787,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == "9am-12pm") {
                                   setState(() {
                                     Shift = 'Morning';
@@ -975,7 +1816,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == "12pm-3pm") {
                                   setState(() {
                                     Shift = 'Morning';
@@ -1002,7 +1845,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == "3pm-6pm") {
                                   setState(() {
                                     Shift = 'Morning';
@@ -1029,7 +1874,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == '6pm-9pm') {
                                   setState(() {
                                     Shift = "Evening";
@@ -1056,7 +1903,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == '9pm-12am') {
                                   setState(() {
                                     Shift = "Evening";
@@ -1083,7 +1932,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == '12am-3am') {
                                   setState(() {
                                     Shift = "Night";
@@ -1110,7 +1961,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 } else if (selectedTimeSlot == '3am-6am') {
                                   setState(() {
                                     Shift = "Night";
@@ -1137,7 +1990,9 @@ class _AppointmentState extends State<Appointment> {
                                       ScheduleObj.timeslot = '';
                                     }
                                   });
-                                  GetSchedule(Shift, SelectedDate, sO);
+                                  repeated == false
+                                      ? GetSchedule(Shift, SelectedDate, sO)
+                                      : print("Repeted appointment Call");
                                 }
                               },
                             );
@@ -1188,76 +2043,82 @@ class _AppointmentState extends State<Appointment> {
             //   trailing: Icon(Icons.timer),
             //   onTap: _pickTime,
             // ),
-            FutureBuilder<String>(
-              future: CheckAvailablity(availability),
-              key: UniqueKey(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Container(
-                    child: snapshot.data == 'Available'
-                        ? Row(
-                            children: [
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Icon(
-                                Icons.check_outlined,
-                                color: Colors.greenAccent,
-                                size: 35,
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                "Available",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.lightBlueAccent),
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text('(' +
-                                  ScheduleObj.fname +
-                                  ' ' +
-                                  ScheduleObj.lname +
-                                  ' Is available)'),
-                            ],
-                          )
-                        : snapshot.data == 'Not-Avaliable'
-                            ? Row(
-                                children: [
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Icon(
-                                    Icons.close_outlined,
-                                    color: Colors.red,
-                                    size: 35,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    "Not-Available",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.lightBlueAccent),
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text('(Please select another Time slot)'),
-                                ],
-                              )
-                            : Text(" "),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-                // By default, show a loading spinner.
-                return const CircularProgressIndicator();
-              },
+            Visibility(
+              visible: repeated == false ? true : false,
+              child: FutureBuilder<String>(
+                future: CheckAvailablity(availability),
+                key: UniqueKey(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Container(
+                      child: snapshot.data == 'Available'
+                          ? Row(
+                              children: [
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Icon(
+                                  Icons.check_outlined,
+                                  color: Colors.greenAccent,
+                                  size: 30,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  "Available",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.lightBlueAccent),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text('(' +
+                                    ScheduleObj.fname +
+                                    ' ' +
+                                    ScheduleObj.lname +
+                                    ' Is available)'),
+                              ],
+                            )
+                          : snapshot.data == 'Not-Avaliable'
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Icon(
+                                      Icons.close_outlined,
+                                      color: Colors.red,
+                                      size: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "Not-Available",
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.lightBlueAccent),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '(Please select another Time slot)',
+                                      style: TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                )
+                              : Text(" "),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('${snapshot.error}');
+                  }
+                  // By default, show a loading spinner.
+                  return const CircularProgressIndicator();
+                },
+              ),
             ),
             Container(
               height: 60,
@@ -1278,7 +2139,10 @@ class _AppointmentState extends State<Appointment> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
-                  showAlertDialog(context);
+                  repeated == false
+                      ? showAlertDialog(context)
+                      : showRepeatedAlertDialog(
+                          context, dates, sO, repetedcount);
                 },
               ),
             ),
@@ -1288,28 +2152,28 @@ class _AppointmentState extends State<Appointment> {
     );
   }
 
-  // Future<Null> _pickTime() async {
-  //   TimeOfDay? time = await showTimePicker(
-  //       context: context,
-  //       initialTime: _time,
-  //       builder: (BuildContext context, Widget? child) {
-  //         return Theme(
-  //           data: ThemeData(),
-  //           child: MediaQuery(
-  //             data:
-  //                 MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
-  //             child: Directionality(
-  //               textDirection: TextDirection.ltr,
-  //               child: child!,
-  //             ),
-  //           ),
-  //         );
-  //       });
-  //   if (time != null)
-  //     setState(() {
-  //       _time = time;
-  //       SelectedTime = _time;
-  //     });
-  //   print(SelectedTime);
-  // }
+// Future<Null> _pickTime() async {
+//   TimeOfDay? time = await showTimePicker(
+//       context: context,
+//       initialTime: _time,
+//       builder: (BuildContext context, Widget? child) {
+//         return Theme(
+//           data: ThemeData(),
+//           child: MediaQuery(
+//             data:
+//                 MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+//             child: Directionality(
+//               textDirection: TextDirection.ltr,
+//               child: child!,
+//             ),
+//           ),
+//         );
+//       });
+//   if (time != null)
+//     setState(() {
+//       _time = time;
+//       SelectedTime = _time;
+//     });
+//   print(SelectedTime);
+// }
 }
