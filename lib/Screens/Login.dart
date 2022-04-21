@@ -49,7 +49,7 @@ class _State extends State<LoginPage> {
   Future<Organization> fetchUserDetails(
       String Username, String Password) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetOrgDetails?Username=${Username}&Password=${Password}'));
+        'http://${Url.ip}/HhcApi/api/OrgAdmin/GetOrgDetails?Username=${Username}&Password=${Password}'));
     if (response.statusCode == 200) {
       Organization paresd = OrganizationFromJson(response.body);
       print(paresd.name);
@@ -99,7 +99,7 @@ class _State extends State<LoginPage> {
           );
         });
       }
-      if (data['Role'] == 'AppAdmin  ') {
+      if (data['Role'] == 'AppAdmin') {
         setState(() {
           Navigator.push(
             context,
@@ -122,7 +122,7 @@ class _State extends State<LoginPage> {
           );
         });
       }
-      if (data['Role'] == 'Employee  ') {
+      if (data['Role'] == 'Employee') {
         await fetchEmpDetails(username, password);
         setState(() {
           Navigator.push(

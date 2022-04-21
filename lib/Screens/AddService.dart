@@ -44,6 +44,12 @@ class AddService extends StatefulWidget {
 
 class _AddServiceState extends State<AddService> {
   late Organization obj = widget.obj;
+  List<String> locations = [
+    "Nurse",
+    "Physio",
+    "Vaccinator",
+  ];
+  String selectedName = "Nurse";
   TextEditingController NameController = TextEditingController();
   TextEditingController DiscriptionController = TextEditingController();
   TextEditingController StaffController = TextEditingController();
@@ -57,7 +63,7 @@ class _AddServiceState extends State<AddService> {
 
   late bool error, sending, success;
   late String msg;
-  String url = "http://${Url.ip}/HhcApi/api/Login/AddService";
+  String url = "http://${Url.ip}/HhcApi/api/OrgAdmin/AddService";
   @override
   void initState() {
     error = false;
@@ -72,7 +78,7 @@ class _AddServiceState extends State<AddService> {
       body: {
         'Name': NameController.text,
         'Discription': DiscriptionController.text,
-        'Staff': StaffController.text,
+        'Staff': selectedName,
         'Charges': ChargesController.text,
         'Organization': obj.name,
       },
@@ -115,13 +121,52 @@ class _AddServiceState extends State<AddService> {
                   ),
                 ),
               ),
-              Container(
-                padding: EdgeInsets.all(10),
-                child: TextField(
-                  controller: StaffController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Staff Required',
+              Card(
+                child: Container(
+                  height: 80,
+                  width: 380,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Staff Required",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      DropdownButton(
+                        autofocus: true,
+                        focusColor: Colors.white,
+                        isExpanded: true,
+                        hint: Text(
+                          'Select Department',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 20,
+                            color: Colors.teal,
+                          ),
+                        ),
+                        onChanged: (String? value) {
+                          setState(
+                            () {
+                              selectedName = value!;
+                            },
+                          );
+                        },
+                        value: selectedName,
+                        items: locations.map((item) {
+                          return DropdownMenuItem(
+                            child: Text(
+                              item,
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.teal,
+                              ),
+                            ),
+                            value: item,
+                          );
+                        }).toList(),
+                        dropdownColor: Colors.white,
+                      ),
+                    ],
                   ),
                 ),
               ),

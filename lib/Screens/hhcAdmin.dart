@@ -3,10 +3,8 @@ import 'package:hhc/Models/Employee.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/Map.dart';
 import 'package:hhc/Screens/OrgRequest.dart';
-import 'package:hhc/Screens/UpdateEmp.dart';
 import 'package:hhc/Urls.dart';
 import 'dart:async';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Post {
@@ -18,6 +16,7 @@ class Post {
 
 class hhcAdmin extends StatefulWidget {
   final Organization orgobj;
+
   const hhcAdmin({Key? key, required this.orgobj}) : super(key: key);
 
   @override
@@ -30,11 +29,11 @@ class _hhcAdminState extends State<hhcAdmin> {
     "Nurse",
     "Physio",
     "Vaccinator",
-    "General Physician",
   ];
   String selectedName = "Nurse";
   String Department = '';
   int eid = 0;
+
   // Future<List<Post>> search(String search) async {
   //   await Future.delayed(Duration(seconds: 2));
   //   if (search == "empty") return [];
@@ -47,9 +46,9 @@ class _hhcAdminState extends State<hhcAdmin> {
   //   });
   // }
 
-  Future<Organization> DeleteEmp(int id) async {
-    final response = await http.delete(
-        Uri.parse('http://${Url.ip}/HhcApi/api/Login/DeleteService?id=${id}'));
+  Future<Organization> DeleteService(int id) async {
+    final response = await http.delete(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/HhcAdmin/DeleteService?id=${id}'));
     if (response.statusCode == 200) {
       Organization data = organizationFromJson(response.body) as Organization;
       return data;
@@ -58,9 +57,9 @@ class _hhcAdminState extends State<hhcAdmin> {
     }
   }
 
-  Future<List<Organization>> fetchorg() async {
+  Future<List<Organization>> acceptedorg() async {
     final response = await http
-        .get(Uri.parse('http://${Url.ip}/HhcApi/api/Login/acceptedorg'));
+        .get(Uri.parse('http://${Url.ip}/HhcApi/api/HhcAdmin/acceptedorg'));
     if (response.statusCode == 200) {
       List<Organization> paresd = organizationFromJson(response.body);
       return paresd;
@@ -69,9 +68,9 @@ class _hhcAdminState extends State<hhcAdmin> {
     }
   }
 
-  Future<Organization> Deletorg(int id) async {
-    final response = await http
-        .delete(Uri.parse('http://${Url.ip}/HhcApi/api/Login/DeleteOrg/${id}'));
+  Future<Organization> DeleteOrg(int id) async {
+    final response = await http.delete(
+        Uri.parse('http://${Url.ip}/HhcApi/api/HhcAdmin/DeleteOrg/${id}'));
     if (response.statusCode == 200) {
       Organization paresd = organizationFromJson(response.body) as Organization;
       return paresd;
@@ -82,7 +81,7 @@ class _hhcAdminState extends State<hhcAdmin> {
 
   Future<List<Employee>> fetchEmpDep(String department) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/IndEmphhc?Dep=${department}'));
+        'http://${Url.ip}/HhcApi/api/HhcAdmin/IndEmphhc?Dep=${department}'));
     if (response.statusCode == 200) {
       List<Employee> paresd = employeeFromJson(response.body);
       return paresd;
@@ -96,7 +95,7 @@ class _hhcAdminState extends State<hhcAdmin> {
   @override
   void initState() {
     super.initState();
-    futureorg = fetchorg();
+    futureorg = acceptedorg();
   }
 
   int selectiteam = 0;
@@ -416,7 +415,8 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                           print(eid);
                                                           if (eid != null) {
                                                             setState(() {
-                                                              DeleteEmp(eid);
+                                                              DeleteService(
+                                                                  eid);
                                                               Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
@@ -506,7 +506,7 @@ class _hhcAdminState extends State<hhcAdmin> {
                                 return ListView.builder(
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
-                                  itemCount: snapshot.data!.length - 1,
+                                  itemCount: snapshot.data!.length,
                                   itemBuilder: (context, index) {
                                     return Container(
                                       child: Column(
@@ -534,119 +534,87 @@ class _hhcAdminState extends State<hhcAdmin> {
                                                   ? Colors.blue[50]
                                                   : Colors.white,
                                               child: Container(
-                                                height: 100,
+                                                height: 80,
                                                 child: Column(
                                                   children: [
                                                     Text(
-                                                      snapshot.data![index]
-                                                                  .name ==
-                                                              'Independent'
-                                                          ? snapshot
-                                                              .data![index + 1]
-                                                              .name
-                                                          : snapshot
-                                                              .data![index]
-                                                              .name,
+                                                      snapshot
+                                                          .data![index].name,
                                                       textAlign:
                                                           TextAlign.right,
                                                       style: TextStyle(
                                                         fontSize: 20,
                                                         fontWeight:
                                                             FontWeight.w500,
-                                                        color: Colors.black,
+                                                        color: Colors.teal,
                                                       ),
                                                     ),
                                                     SizedBox(
                                                       height: 5,
                                                     ),
-                                                    Text(
-                                                      snapshot.data![index]
-                                                                  .name ==
-                                                              'Independent'
-                                                          ? snapshot
-                                                              .data![index + 1]
-                                                              .address
-                                                          : snapshot
-                                                              .data![index]
-                                                              .address,
-                                                      textAlign:
-                                                          TextAlign.right,
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        //fontWeight: FontWeight.w500,
-                                                        //color: Colors.teal,
-                                                      ),
+                                                    // Text(
+                                                    //   snapshot.data![index].address,
+                                                    //   textAlign: TextAlign.right,
+                                                    //   style: TextStyle(
+                                                    //     fontSize: 15,
+                                                    //     //fontWeight: FontWeight.w500,
+                                                    //     //color: Colors.teal,
+                                                    //   ),
+                                                    // ),
+                                                    // SizedBox(
+                                                    //   height: 5,
+                                                    // ),
+                                                    Row(
+                                                      children: [
+                                                        SizedBox(
+                                                          width: 50,
+                                                        ),
+                                                        Text(
+                                                          snapshot.data![index]
+                                                              .discription,
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
                                                     ),
                                                     Row(
                                                       children: [
                                                         SizedBox(
-                                                          width: 85,
+                                                          width: 100,
                                                         ),
                                                         Text(
                                                           snapshot.data![index]
-                                                                      .name ==
-                                                                  'Independent'
-                                                              ? snapshot
-                                                                  .data![
-                                                                      index + 1]
-                                                                  .phonenum
-                                                              : snapshot
-                                                                  .data![
-                                                                      index + 1]
-                                                                  .phonenum,
+                                                              .hooName,
                                                           textAlign:
                                                               TextAlign.right,
                                                           style: TextStyle(
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          " | ",
-                                                          style: TextStyle(
-                                                            fontSize: 20,
-                                                            fontWeight:
-                                                                FontWeight.w900,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          snapshot.data![index]
-                                                                      .name ==
-                                                                  'Independent'
-                                                              ? snapshot
-                                                                  .data![
-                                                                      index + 1]
-                                                                  .city
-                                                              : snapshot
-                                                                  .data![index]
-                                                                  .city,
-                                                          textAlign:
-                                                              TextAlign.right,
-                                                          style: TextStyle(
-                                                            fontSize: 15,
+                                                            fontSize: 14,
                                                           ),
                                                         ),
                                                         SizedBox(
                                                           width: 5,
                                                         ),
-                                                        IconButton(
-                                                          icon: new Icon(
-                                                            Icons.location_on,
-                                                            color: Colors.blue,
-                                                            //size: 23,
+                                                        Text("|"),
+                                                        SizedBox(
+                                                          width: 5,
+                                                        ),
+                                                        Text(
+                                                          snapshot.data![index]
+                                                              .phonenum,
+                                                          textAlign:
+                                                              TextAlign.right,
+                                                          style: TextStyle(
+                                                            fontSize: 14,
                                                           ),
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        Map(),
-                                                              ),
-                                                            );
-                                                          },
                                                         ),
                                                       ],
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                               ),

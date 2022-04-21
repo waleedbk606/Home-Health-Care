@@ -17,7 +17,7 @@ class Records extends StatefulWidget {
 class _RecordsState extends State<Records> {
   Future<List<Appointment>> GetCompletedAppointments() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetCompletedAppointments?uid=${widget.obj.uid}'));
+        'http://${Url.ip}/HhcApi/api/User/GetCompletedAppointments?uid=${widget.obj.uid}'));
     if (response.statusCode == 200) {
       List<Appointment> paresd = appointmentFromJson(response.body);
       return paresd;
@@ -28,7 +28,7 @@ class _RecordsState extends State<Records> {
 
   Future<void> UpdateRating(int aid, String rate) async {
     final response = await http.patch(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/UpdateRatings?aid=${aid}&rating=${rate}'));
+        'http://${Url.ip}/HhcApi/api/User/UpdateRatings?aid=${aid}&rating=${rate}'));
     if (response.statusCode == 200) {
       print(response.body);
     } else {

@@ -1,58 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:hhc/Models/Locations.dart';
+import 'package:hhc/Screens/UpdateEmp.dart';
 
-import '../Models/Locations.dart';
-import 'AddOrg.dart';
+import '../Models/Employee.dart';
 
-class Map extends StatefulWidget {
-  const Map({
-    Key? key,
-  }) : super(key: key);
+class EmpMap extends StatefulWidget {
+  final Employee obj;
+  final Locations locationsObj;
+  const EmpMap({Key? key, required this.obj, required this.locationsObj})
+      : super(key: key);
 
   @override
-  _MapState createState() => _MapState();
+  State<EmpMap> createState() => _EmpMapState();
 }
 
-class _MapState extends State<Map> {
+class _EmpMapState extends State<EmpMap> {
   late GoogleMapController _controller;
   double lat = 0.0;
   double long = 0.0;
+  Locations locationsObj =
+      new Locations(id: 0, orgName: "", lat: "", long: "", radius: "");
   List<Marker> MyMarker = [];
-  List<Circle> mCircle = [];
-  List<Locations> OrgLocations = [];
   final CameraPosition _initialPosition = CameraPosition(
     target: LatLng(33.7029293, 73.0529099),
     zoom: 12.0,
   );
-
-  // Set.from([
+  List<Circle> mCircle = [];
+  //Set.from([
   //   Circle(
   //     circleId: CircleId('1'),
   //     center: LatLng(33.7029293, 73.0529099),
   //     radius: 3000,
   //   ),
-  // Circle(
-  //   circleId: CircleId('2'),
-  //   center: LatLng(33.6176001, 73.0529099),
-  //   radius: 3000,
-  // )
-  //]);
-
-  void Addlocation(List<Marker> Marker, List<Circle> Circle) {
-    Locations obj =
-        new Locations(id: 0, orgName: "", lat: "", long: "", radius: "");
-    for (int i = 1; i <= Marker.length; i++) {
-      obj.lat = Marker[i].position.latitude.toString();
-      obj.long = Marker[i].position.longitude.toString();
-      obj.radius = Circle[i].radius.toString();
-      OrgLocations.add(obj);
-    }
-    for (int i = 1; i <= OrgLocations.length; i++) {
-      print("${i}:Latitude" + OrgLocations[i].lat);
-      print("${i}:Longitude" + OrgLocations[i].long);
-      print("${i}:radius" + OrgLocations[i].radius);
-    }
-  }
+  //   // Circle(
+  //   //   circleId: CircleId('2'),
+  //   //   center: LatLng(33.6176001, 73.0529099),
+  //   //   radius: 3000,
+  //   // )
+  // ]);
 
   TextEditingController RadiusController = TextEditingController();
   @override
@@ -68,7 +54,7 @@ class _MapState extends State<Map> {
           child: Column(
             children: [
               Container(
-                width: 300,
+                width: 400,
                 padding: EdgeInsets.all(10),
                 child: TextField(
                   controller: RadiusController,
@@ -80,7 +66,7 @@ class _MapState extends State<Map> {
               ),
               Container(
                 width: 400,
-                height: 500,
+                height: 450,
                 child: GoogleMap(
                   initialCameraPosition: _initialPosition,
                   mapType: MapType.normal,
@@ -96,7 +82,7 @@ class _MapState extends State<Map> {
                 ),
               ),
               SizedBox(
-                height: 15,
+                height: 30,
               ),
               Container(
                 height: 60,
@@ -117,15 +103,16 @@ class _MapState extends State<Map> {
                     style: TextStyle(color: Colors.white),
                   ),
                   onPressed: () {
-                    print(MyMarker.length);
-                    print(mCircle.length);
-                    print(OrgLocations.length);
+                    print(lat);
+                    print(long);
+                    print(RadiusController.text);
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddOrg(OrgList: OrgLocations),
-                      ),
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => UpdateEmp(
+                                  obj: widget.obj,
+                                  locationsObj: locationsObj,
+                                )));
                   },
                 ),
               ),
@@ -137,8 +124,9 @@ class _MapState extends State<Map> {
   }
 
   handelTap(LatLng tappedPoint) {
-    print(tappedPoint);
     setState(() {
+      MyMarker = [];
+      mCircle = [];
       MyMarker.add(
         Marker(
             markerId: MarkerId(
@@ -159,27 +147,9 @@ class _MapState extends State<Map> {
       );
       lat = tappedPoint.latitude;
       long = tappedPoint.longitude;
+      locationsObj.lat = tappedPoint.latitude.toString();
+      locationsObj.long = tappedPoint.longitude.toString();
+      locationsObj.radius = RadiusController.text;
     });
-    OrgLocations = [];
-    for (int i = 0; i < MyMarker.length; i++) {
-      print("${i + 1}st Circle" +
-          "  ${mCircle[i].radius} " +
-          "${MyMarker[i].position}");
-      Locations obj = new Locations(
-          id: i,
-          orgName: "",
-          lat: MyMarker[i].position.latitude.toString(),
-          long: MyMarker[i].position.longitude.toString(),
-          radius: mCircle[i].radius.toString());
-      OrgLocations.add(obj);
-      obj = new Locations(id: 0, orgName: "", lat: "", long: "", radius: "");
-    }
-    print(OrgLocations.length);
-    for (int i = 0; i < OrgLocations.length; i++) {
-      print("${i}:Id " + OrgLocations[i].id.toString());
-      print("${i}:Latitude " + OrgLocations[i].lat);
-      print("${i}:Longitude " + OrgLocations[i].long);
-      print("${i}:radius " + OrgLocations[i].radius);
-    }
   }
 }

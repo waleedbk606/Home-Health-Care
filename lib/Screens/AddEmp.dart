@@ -45,7 +45,7 @@ class _AddEmpState extends State<AddEmp> {
   late String msg;
   Employee edata = null as Employee;
 
-  String url = "http://${Url.ip}/HhcApi/api/Login/AddEmployee";
+  String url = "http://${Url.ip}/HhcApi/api/OrgAdmin/AddEmployee";
 
   @override
   void initState() {

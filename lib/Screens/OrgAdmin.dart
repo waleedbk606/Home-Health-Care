@@ -54,7 +54,6 @@ class _OrgAdminState extends State<OrgAdmin> {
     "Nurse",
     "Physio",
     "Vaccinator",
-    "General Physician",
   ];
   String selectedName = "Nurse";
   String Department = '';
@@ -67,7 +66,7 @@ class _OrgAdminState extends State<OrgAdmin> {
   Future<Organization> fetchUserDetails(
       String Username, String Password) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetOrgDetails?Username=${Username}&Password=${Password}'));
+        'http://${Url.ip}/HhcApi/api/OrgAdmin/GetOrgDetails?Username=${Username}&Password=${Password}'));
     if (response.statusCode == 200) {
       Organization paresd = OrganizationFromJson(response.body);
       print(paresd.name);
@@ -79,7 +78,7 @@ class _OrgAdminState extends State<OrgAdmin> {
 
   Future<List<Employee>> fetchEmpDep(String department, String OrgName) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/DepDropOrg?Dep=${department}&Org=${OrgName}'));
+        'http://${Url.ip}/HhcApi/api/OrgAdmin/DepDropOrg?Dep=${department}&Org=${OrgName}'));
     if (response.statusCode == 200) {
       List<Employee> paresd = employeeFromJson(response.body);
       return paresd;
@@ -104,8 +103,8 @@ class _OrgAdminState extends State<OrgAdmin> {
   // }
 
   Future<List<Employee>> DeleteEmp(int id) async {
-    final response = await http.delete(
-        Uri.parse('http://${Url.ip}/HhcApi/api/Login/DeleteService?id=${id}'));
+    final response = await http.delete(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/OrgAdmin/DeleteService?id=${id}'));
     if (response.statusCode == 200) {
       List<Employee> data = employeeFromJson(response.body);
       return data;
@@ -947,7 +946,7 @@ class _OrgAdminState extends State<OrgAdmin> {
 
   Future<List<service>> fetchServices(String org) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/ViewServices?org=${obj.name}'));
+        'http://${Url.ip}/HhcApi/api/OrgAdmin/ViewServices?org=${obj.name}'));
     if (response.statusCode == 200) {
       List paresd = jsonDecode(response.body);
       print("acc");

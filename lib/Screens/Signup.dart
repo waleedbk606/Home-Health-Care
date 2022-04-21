@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hhc/Models/Locations.dart';
 import 'package:hhc/Models/Organization.dart';
 import 'package:hhc/Screens/AddOrg.dart';
 import 'Login.dart';
@@ -41,13 +42,13 @@ class _SignupState extends State<Signup> {
     "Nurse",
     "Physio",
     "Vaccinator",
-    "General Physician",
     "Organization",
   ];
+  List<Locations> LocationList = [];
   String OrgCheck = "";
   String urllog = "http://${Url.ip}/HhcApi/api/Login/AddLogin";
   String url = "http://${Url.ip}/HhcApi/api/Login/AddRegister";
-  String urlemp = "http://${Url.ip}/HhcApi/api/Login/AddEmployee";
+  String urlemp = "http://${Url.ip}/HhcApi/api/Employee/AddEmployee";
 
   @override
   void initState() {
@@ -196,9 +197,13 @@ class _SignupState extends State<Signup> {
                             print(OrgCheck);
                             if (OrgCheck == "Organization") {
                               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AddOrg()));
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AddOrg(
+                                    OrgList: LocationList,
+                                  ),
+                                ),
+                              );
                             }
                           },
                         );
@@ -349,7 +354,7 @@ class _SignupState extends State<Signup> {
         'Status': "Details Required"
       },
     );
-
+    print("Employee data send");
     if (res.statusCode == 200) {
       print(res.body);
       // var data = json.decode(res.body);

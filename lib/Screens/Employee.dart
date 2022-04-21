@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Appointment.dart';
 import 'package:hhc/Models/Employee.dart';
+import 'package:hhc/Models/Locations.dart';
 import 'package:hhc/Models/Schedule.dart';
 import 'package:hhc/Screens/Leave.dart';
 import 'package:hhc/Screens/UpdateEmp.dart';
@@ -35,7 +36,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
   var LeaveObj;
   Future<Schedule> SchduleObj() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetScheduleObj?eid=${widget.obj.eid}'));
+        'http://${Url.ip}/HhcApi/api/Employee/GetScheduleObj?eid=${widget.obj.eid}'));
     if (response.statusCode == 200) {
       Schedule paresd = schedulefromJson(response.body);
       LeaveObj = paresd;
@@ -47,7 +48,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
 
   Future<void> CompleteAppointment(int aid) async {
     final response = await http.patch(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/CompleteAppointment?id=${aid}'));
+        'http://${Url.ip}/HhcApi/api/Employee/CompleteAppointment?id=${aid}'));
     if (response.statusCode == 200) {
       print(jsonDecode(response.body));
     } else {
@@ -57,7 +58,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
 
   Future<void> UpdateSchPendApp(int eid) async {
     final response = await http.patch(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/UpdatePendAppSubtract?eid=${eid}'));
+        'http://${Url.ip}/HhcApi/api/Employee/UpdatePendAppSubtract?eid=${eid}'));
     if (response.statusCode == 200) {
       print(response.body);
     } else {
@@ -67,7 +68,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
 
   Future<void> DeletSchedule(int eid, String data, String time) async {
     final response = await http.delete(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/DeleteSchedule?eid=${eid}&date=${data}&time=${time}'));
+        'http://${Url.ip}/HhcApi/api/Employee/DeleteSchedule?eid=${eid}&date=${data}&time=${time}'));
     if (response.statusCode == 200) {
       print("Delete done");
     } else {
@@ -77,7 +78,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
 
   Future<List<Appointment>> GetPendingAppointments() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetEmpAppointments?eid=${widget.obj.eid}'));
+        'http://${Url.ip}/HhcApi/api/Employee/GetEmpAppointments?eid=${widget.obj.eid}'));
     if (response.statusCode == 200) {
       List<Appointment> paresd = appointmentFromJson(response.body);
       return paresd;
@@ -94,7 +95,7 @@ class _EmployeeHomeState extends State<EmployeeHome> {
   void initState() {
     super.initState();
     getApp = GetPendingAppointments();
-    SchduleObj();
+    // SchduleObj();
     date = DateTime.now();
   }
 
@@ -111,6 +112,8 @@ class _EmployeeHomeState extends State<EmployeeHome> {
     return b;
   }
 
+  Locations Locationsobj =
+      new Locations(id: 0, orgName: "", lat: '', long: "", radius: "");
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
@@ -318,7 +321,10 @@ class _EmployeeHomeState extends State<EmployeeHome> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => UpdateEmp(obj: emp)),
+                                    builder: (context) => UpdateEmp(
+                                          obj: emp,
+                                          locationsObj: Locationsobj,
+                                        )),
                               );
                             },
                           )

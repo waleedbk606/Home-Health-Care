@@ -27,7 +27,7 @@ class _LeaveState extends State<Leave> {
 
   Future<void> GivenDate() async {
     var res = await http.post(
-      Uri.parse("http://${Url.ip}/HhcApi/api/Login/AddEmpSchedule"),
+      Uri.parse("http://${Url.ip}/HhcApi/api/Employee/AddEmpSchedule"),
       body: {
         "eid": widget.Sobj.eid.toString(),
         "fname": widget.Sobj.fname,
@@ -39,7 +39,7 @@ class _LeaveState extends State<Leave> {
         "ratings": widget.Sobj.ratings.toString(),
         "date": SelectedDate,
         "timeslot": 'Leave',
-        "NoLeave": (widget.Sobj.noLeave).toString(),
+        "NoLeave": (widget.Sobj.noLeave + 1).toString(),
       },
     );
     if (res.statusCode == 200) {
@@ -49,7 +49,7 @@ class _LeaveState extends State<Leave> {
 
   Future<void> UpdateOrg(int id) async {
     final response = await http.patch(
-        Uri.parse('http://${Url.ip}/HhcApi/api/Login/NoLeave?eid=${id}'));
+        Uri.parse('http://${Url.ip}/HhcApi/api/Employee/NoLeave?eid=${id}'));
     if (response.statusCode == 200) {
       print(response.body);
     } else {

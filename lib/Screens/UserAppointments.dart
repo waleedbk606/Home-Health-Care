@@ -20,7 +20,7 @@ class UserAppoint extends StatefulWidget {
 class _UserAppointState extends State<UserAppoint> {
   Future<List<Appointment>> GetPendingAppointments() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetAppointments?uid=${widget.obj.uid}'));
+        'http://${Url.ip}/HhcApi/api/User/GetAppointments?uid=${widget.obj.uid}'));
     if (response.statusCode == 200) {
       List<Appointment> paresd = appointmentFromJson(response.body);
       return paresd;

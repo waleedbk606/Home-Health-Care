@@ -30,9 +30,11 @@ class Employee {
     required this.password,
     required this.orgName,
     required this.department,
+    required this.city,
     required this.status,
     required this.nofComApm,
     required this.raitings,
+    required this.shift,
   });
 
   int eid;
@@ -49,10 +51,11 @@ class Employee {
   String password;
   String orgName;
   String department;
+  String city;
   String status;
   int nofComApm;
   int raitings;
-
+  String shift;
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
         eid: json["eid"],
         fname: json["Fname"],
@@ -68,6 +71,8 @@ class Employee {
         password: json["Password"],
         orgName: json["OrgName"],
         department: json["Department"],
+        shift: json["Shift"],
+        city: json["City"],
         status: json["Status"],
         nofComApm: json["NofComApm"] == null ? null : json["NofComApm"],
         raitings: json["Raitings"] == null ? null : json["Raitings"],
@@ -88,6 +93,8 @@ class Employee {
         "Password": password,
         "OrgName": orgName,
         "Department": department,
+        "Shift": shift,
+        "City": city,
         "Status": status,
         "NofComApm": nofComApm == null ? null : nofComApm,
         "Raitings": raitings == null ? null : raitings,

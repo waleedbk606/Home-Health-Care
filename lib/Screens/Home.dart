@@ -24,17 +24,18 @@ class _hhcHomeState extends State<hhcHome> {
   List<Welcome> _Staff = [];
   List<Services> _Service = [];
   var obj;
-  String selectedName = "Pims";
+  String selectedName = "Independent";
   String Org = '';
   String selectedstaff = "Nurse";
   String Dep = '';
   String selectedServices = "Wound Dressing";
   String Ser = '';
-  String selectedItration = 'Once';
+  String OrgInDSelect = "Organizations";
+  bool OrgSel = true;
 
   Future<User> fetchUserDetails(String Username, String Password) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetUserDetails?Username=${Username}&Password=${Password}'));
+        'http://${Url.ip}/HhcApi/api/User/GetUserDetails?Username=${Username}&Password=${Password}'));
     if (response.statusCode == 200) {
       User paresd = userFromJson(response.body);
       obj = paresd;
@@ -47,27 +48,29 @@ class _hhcHomeState extends State<hhcHome> {
 
   Future<List<Organization>> fetchDropORG() async {
     final response = await http
-        .get(Uri.parse('http://${Url.ip}/HhcApi/api/Login/GetDropOrg'));
+        .get(Uri.parse('http://${Url.ip}/HhcApi/api/User/GetDropOrg'));
     if (response.statusCode == 200) {
       List<Organization> Locations = organizationFromJson(response.body);
       setState(() {
+        locations = [];
+        selectedName = Locations[0].name;
         locations.addAll(Locations);
       });
-      print(locations.elementAt(1));
+      print(locations.elementAt(0));
       return locations;
     } else {
       throw Exception('Failed to load album');
     }
   }
 
-  Future<List<Welcome>> fetchDepartment() async {
+  Future<List<Welcome>> fetchDepartment(String SelectedOrg) async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/GetDepartments?Org=${selectedName}'));
+        'http://${Url.ip}/HhcApi/api/User/GetDepartments?Org=${SelectedOrg}'));
     if (response.statusCode == 200) {
       List<Welcome> Staff = welcomeFromJson(response.body);
       setState(() {
         _Staff = [];
-        selectedstaff = "Nurse";
+        selectedstaff = Staff[0].department;
         _Staff.addAll(Staff);
       });
       return _Staff;
@@ -78,15 +81,14 @@ class _hhcHomeState extends State<hhcHome> {
 
   Future<List<Services>> fetchDropServices() async {
     final response = await http.get(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/ViewServices?Org=${selectedName}&dep=${selectedstaff}'));
+        'http://${Url.ip}/HhcApi/api/User/ViewServices?Org=${selectedName}&dep=${selectedstaff}'));
     if (response.statusCode == 200) {
       List<Services> services = servicesFromJson(response.body);
       setState(() {
         _Service = [];
-        selectedServices = "Wound Dressing";
+        selectedServices = services[0].name.toString();
         _Service.addAll(services);
       });
-      //print(_Service.elementAt(1));
       return _Service;
     } else {
       throw Exception('Failed to load album');
@@ -96,8 +98,8 @@ class _hhcHomeState extends State<hhcHome> {
   @override
   void initState() {
     super.initState();
-    fetchDropORG();
     fetchUserDetails(widget.username, widget.password);
+    fetchDropORG();
   }
 
   @override
@@ -114,55 +116,99 @@ class _hhcHomeState extends State<hhcHome> {
           child: Column(
             children: [
               SizedBox(
-                height: 25,
+                height: 5,
+              ),
+              Container(
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      'Organizations',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    Radio(
+                      groupValue: OrgInDSelect,
+                      value: 'Organizations',
+                      onChanged: (String? val) {
+                        setState(() {
+                          OrgInDSelect = val!;
+                          print(OrgInDSelect);
+                          OrgSel = true;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      'Independent',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    Radio(
+                      groupValue: OrgInDSelect,
+                      value: 'Independent',
+                      onChanged: (String? val) {
+                        setState(() {
+                          OrgInDSelect = val!;
+                          print(OrgInDSelect);
+                          OrgSel = false;
+                          fetchDepartment(OrgInDSelect);
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(3),
                 ),
-                child: Container(
-                  height: 80,
-                  width: double.infinity,
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Organizations',
-                        style: TextStyle(
-                          color: Colors.teal,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 25,
-                        ),
-                      ),
-                      DropdownButton(
-                        autofocus: true,
-                        hint: Text(
-                          'Organizations',
+                child: Visibility(
+                  visible: OrgSel == true ? true : false,
+                  child: Container(
+                    height: 80,
+                    width: double.infinity,
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Select Organization',
                           style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 35,
                             color: Colors.teal,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
                           ),
                         ),
-                        value: selectedName,
-                        onChanged: (String? newValue) {
-                          setState(
-                            () {
-                              selectedName = newValue!;
-                              Org = selectedName;
-                              fetchDepartment();
-                            },
-                          );
-                        },
-                        items: locations.map((item) {
-                          return DropdownMenuItem(
-                            child: new Text(item.name),
-                            value: item.name,
-                          );
-                        }).toList(),
-                        dropdownColor: Colors.white,
-                      ),
-                    ],
+                        DropdownButton(
+                          autofocus: true,
+                          value: selectedName,
+                          onChanged: (String? newValue) {
+                            setState(
+                              () {
+                                selectedName = newValue!;
+                                Org = selectedName;
+                                fetchDepartment(selectedName);
+                              },
+                            );
+                          },
+                          items: locations.map((item) {
+                            return DropdownMenuItem(
+                              child: new Text(item.name),
+                              value: item.name,
+                            );
+                          }).toList(),
+                          dropdownColor: Colors.white,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -180,11 +226,11 @@ class _hhcHomeState extends State<hhcHome> {
                   child: Column(
                     children: [
                       Text(
-                        'Medical Staff',
+                        'Select Medical Staff',
                         style: TextStyle(
                           color: Colors.teal,
                           fontWeight: FontWeight.w500,
-                          fontSize: 25,
+                          fontSize: 20,
                         ),
                       ),
                       DropdownButton(
@@ -194,8 +240,14 @@ class _hhcHomeState extends State<hhcHome> {
                         onChanged: (String? newValue) {
                           setState(
                             () {
+                              // selectedstaff == "Nurse"
+                              //     ? selectedServices = "Wound Dressing"
+                              //     : selectedstaff == "Physio"
+                              //         ? selectedServices = "Physiotherapy"
+                              //         : selectedServices = "Baby Vaccination";
                               selectedstaff = newValue!;
                               Dep = selectedstaff;
+
                               fetchDropServices();
                             },
                           );
@@ -226,11 +278,11 @@ class _hhcHomeState extends State<hhcHome> {
                   child: Column(
                     children: [
                       Text(
-                        'Type of Services',
+                        'Select Services',
                         style: TextStyle(
                           color: Colors.teal,
                           fontWeight: FontWeight.w500,
-                          fontSize: 25,
+                          fontSize: 20,
                         ),
                       ),
                       SizedBox(
@@ -332,6 +384,8 @@ class _hhcHomeState extends State<hhcHome> {
                           userObj: obj,
                           org: Org,
                           dep: Dep,
+                          lat: 0,
+                          lng: 0,
                         ),
                       ),
                     );

@@ -123,8 +123,8 @@ class _OrgRequestState extends State<OrgRequest> {
   String urllog = "http://${Url.ip}/HhcApi/api/Login/AddLogin";
 
   Future<List<Organization>> fetchorg() async {
-    final response =
-        await http.get(Uri.parse('http://${Url.ip}/HhcApi/api/Login/GetOrg'));
+    final response = await http
+        .get(Uri.parse('http://${Url.ip}/HhcApi/api/HhcAdmin/GetOrg'));
     if (response.statusCode == 200) {
       List<Organization> paresd = organizationFromJson(response.body);
       return paresd;
@@ -134,8 +134,8 @@ class _OrgRequestState extends State<OrgRequest> {
   }
 
   Future<org> Deletorg(int id) async {
-    final response = await http
-        .delete(Uri.parse('http://${Url.ip}/HhcApi/api/Login/DeleteOrg/${id}'));
+    final response = await http.delete(
+        Uri.parse('http://${Url.ip}/HhcApi/api/HhcAdmin/DeleteOrg/${id}'));
     if (response.statusCode == 200) {
       return org.fromJson(jsonDecode(response.body));
     } else {
@@ -144,8 +144,8 @@ class _OrgRequestState extends State<OrgRequest> {
   }
 
   Future<org> UpdateOrg(int id) async {
-    final response = await http.patch(
-        Uri.parse('http://${Url.ip}/HhcApi/api/Login/UpdateOrgStatus/${id}'));
+    final response = await http.patch(Uri.parse(
+        'http://${Url.ip}/HhcApi/api/HhcAdmin/UpdateOrgStatus/${id}'));
     if (response.statusCode == 200) {
       return org.fromJson(jsonDecode(response.body));
     } else {
@@ -154,8 +154,8 @@ class _OrgRequestState extends State<OrgRequest> {
   }
 
   Future<List<empl>> fetchEmp() async {
-    final response = await http
-        .get(Uri.parse('http://${Url.ip}/HhcApi/api/Login/GetIndPendingEmp'));
+    final response = await http.get(
+        Uri.parse('http://${Url.ip}/HhcApi/api/HhcAdmin/GetIndPendingEmp'));
     if (response.statusCode == 200) {
       List paresd = jsonDecode(response.body);
 
@@ -168,7 +168,7 @@ class _OrgRequestState extends State<OrgRequest> {
 
   Future<empl> DeleteEmp(int id) async {
     final response = await http.delete(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/DeletePendingEmpl?id=${id}'));
+        'http://${Url.ip}/HhcApi/api/HhcAdmin/DeletePendingEmpl?id=${id}'));
     if (response.statusCode == 200) {
       return empl.fromJson(jsonDecode(response.body));
     } else {
@@ -178,7 +178,7 @@ class _OrgRequestState extends State<OrgRequest> {
 
   Future<empl> UpdateEmp(int id) async {
     final response = await http.patch(Uri.parse(
-        'http://${Url.ip}/HhcApi/api/Login/UpdateEpmlStatus?id=${id}'));
+        'http://${Url.ip}/HhcApi/api/HhcAdmin/UpdateEpmlStatus?id=${id}'));
     if (response.statusCode == 200) {
       return empl.fromJson(jsonDecode(response.body));
     } else {
@@ -736,42 +736,60 @@ class _OrgRequestState extends State<OrgRequest> {
                                           SizedBox(
                                             height: 5,
                                           ),
-                                          Text(
-                                            snapshot.data![index].address,
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              //fontWeight: FontWeight.w500,
-                                              //color: Colors.teal,
-                                            ),
+                                          // Text(
+                                          //   snapshot.data![index].address,
+                                          //   textAlign: TextAlign.right,
+                                          //   style: TextStyle(
+                                          //     fontSize: 15,
+                                          //     //fontWeight: FontWeight.w500,
+                                          //     //color: Colors.teal,
+                                          //   ),
+                                          // ),
+                                          // SizedBox(
+                                          //   height: 5,
+                                          // ),
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 50,
+                                              ),
+                                              Text(
+                                                snapshot
+                                                    .data![index].discription,
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           SizedBox(
-                                            height: 5,
+                                            height: 10,
                                           ),
                                           Row(
                                             children: [
                                               SizedBox(
-                                                width: 75,
+                                                width: 100,
+                                              ),
+                                              Text(
+                                                snapshot.data![index].hooName,
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text("|"),
+                                              SizedBox(
+                                                width: 5,
                                               ),
                                               Text(
                                                 snapshot.data![index].phonenum,
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                              Text(
-                                                " | ",
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.w900,
-                                                ),
-                                              ),
-                                              Text(
-                                                snapshot.data![index].city,
-                                                textAlign: TextAlign.right,
-                                                style: TextStyle(
-                                                  fontSize: 15,
+                                                  fontSize: 14,
                                                 ),
                                               ),
                                             ],

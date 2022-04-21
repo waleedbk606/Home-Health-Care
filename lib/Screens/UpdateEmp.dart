@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hhc/Models/Employee.dart';
+import 'package:hhc/Models/Locations.dart';
 import 'package:hhc/Models/Organization.dart';
+import 'package:hhc/Screens/EmpMap.dart';
 import 'package:hhc/Screens/Employee.dart';
 import 'package:hhc/Screens/Login.dart';
+import 'package:hhc/Screens/Map.dart';
 import 'package:hhc/Screens/OrgAdmin.dart';
 import 'package:hhc/Urls.dart';
 import 'dart:async';
@@ -49,63 +54,65 @@ showAlertDialog(BuildContext context) {
   );
 }
 
-class org {
-  String eid;
-  String Fname;
-  String Lname;
-  String Age;
-  String CNIC;
-  String Gender;
-  String Phone;
-  String Email;
-  String Qualification;
-  String Experience;
-  String Username;
-  String Password;
-  String OrgName;
-  String Department;
-  String Status;
-  org({
-    required this.eid,
-    required this.Fname,
-    required this.Lname,
-    required this.Age,
-    required this.CNIC,
-    required this.Gender,
-    required this.Phone,
-    required this.Email,
-    required this.Qualification,
-    required this.Experience,
-    required this.Username,
-    required this.Password,
-    required this.OrgName,
-    required this.Department,
-    required this.Status,
-  });
-  factory org.fromJson(Map<String, dynamic> json) {
-    return org(
-      eid: json['eid'].toString(),
-      Fname: json['Fname'],
-      Lname: json['Lname'],
-      Age: json['Age'],
-      CNIC: json['CNIC'],
-      Gender: json['Gender'],
-      Phone: json['Phone'],
-      Email: json['Email'],
-      Qualification: json['Qualification'],
-      Experience: json['Experience'],
-      Username: json['Username'],
-      Password: json['Password'],
-      OrgName: json['OrgName'],
-      Department: json['Department'],
-      Status: json['Status'],
-    );
-  }
-}
+// class org {
+//   String eid;
+//   String Fname;
+//   String Lname;
+//   String Age;
+//   String CNIC;
+//   String Gender;
+//   String Phone;
+//   String Email;
+//   String Qualification;
+//   String Experience;
+//   String Username;
+//   String Password;
+//   String OrgName;
+//   String Department;
+//   String Status;
+//   org({
+//     required this.eid,
+//     required this.Fname,
+//     required this.Lname,
+//     required this.Age,
+//     required this.CNIC,
+//     required this.Gender,
+//     required this.Phone,
+//     required this.Email,
+//     required this.Qualification,
+//     required this.Experience,
+//     required this.Username,
+//     required this.Password,
+//     required this.OrgName,
+//     required this.Department,
+//     required this.Status,
+//   });
+//   factory org.fromJson(Map<String, dynamic> json) {
+//     return org(
+//       eid: json['eid'].toString(),
+//       Fname: json['Fname'],
+//       Lname: json['Lname'],
+//       Age: json['Age'],
+//       CNIC: json['CNIC'],
+//       Gender: json['Gender'],
+//       Phone: json['Phone'],
+//       Email: json['Email'],
+//       Qualification: json['Qualification'],
+//       Experience: json['Experience'],
+//       Username: json['Username'],
+//       Password: json['Password'],
+//       OrgName: json['OrgName'],
+//       Department: json['Department'],
+//       Status: json['Status'],
+//     );
+//   }
+// }
 
 class UpdateEmp extends StatefulWidget {
   final Employee obj;
-  const UpdateEmp({Key? key, required this.obj}) : super(key: key);
+  final Locations locationsObj;
+  const UpdateEmp({Key? key, required this.obj, required this.locationsObj})
+      : super(key: key);
 
   @override
   _UpdateEmpState createState() => _UpdateEmpState();
@@ -125,7 +132,11 @@ class _UpdateEmpState extends State<UpdateEmp> {
   TextEditingController ExperienceController = TextEditingController();
   TextEditingController UsernameController = TextEditingController();
   TextEditingController PasswordController = TextEditingController();
-
+  List<String> locations = [
+    "Islamabad",
+    "Rawalpindi",
+  ];
+  String selectedName = "Islamabad";
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   void validate() {
     if (_formkey.currentState!.validate()) {
@@ -133,6 +144,8 @@ class _UpdateEmpState extends State<UpdateEmp> {
     }
   }
 
+  Locations locationsObj =
+      new Locations(id: 0, orgName: "", lat: "", long: "", radius: "");
   Object? _value = 'user';
   late bool error, sending, success;
   late String msg;
@@ -148,7 +161,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
 
   Future<List<Employee>> fetchorg(int id) async {
     final response = await http
-        .get(Uri.parse('http://${Url.ip}/HhcApi/api/Login/GetEmp?id=${id}'));
+        .get(Uri.parse('http://${Url.ip}/HhcApi/api/Employee/GetEmp?id=${id}'));
     if (response.statusCode == 200) {
       List<Employee> paresd = employeeFromJson(response.body);
       print(response.body);
@@ -162,7 +175,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
   Future<void> sendData() async {
     if (obj.orgName == "Independent") {
       var res = await http.post(
-        Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
+        Uri.parse(('http://${Url.ip}/HhcApi/api/Employee/ModifyEmployee')),
         body: {
           'eid': obj.eid.toString(),
           'Fname': FnameController.text,
@@ -179,8 +192,10 @@ class _UpdateEmpState extends State<UpdateEmp> {
           'OrgName': obj.orgName,
           'Department': obj.department,
           'Status': "Pending",
-          'NofComApm': 0.toString(),
-          'Raitings': 0.toString()
+          'Lat': widget.locationsObj.lat.toString(),
+          'Long': widget.locationsObj.long.toString(),
+          'Radius': widget.locationsObj.radius.toString(),
+          'Raitings': 0.toString(),
         },
       );
       if (res.statusCode == 200) {
@@ -195,7 +210,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
       // }
     } else {
       var res = await http.post(
-        Uri.parse(('http://${Url.ip}/HhcApi/api/Login/ModifyEmployee')),
+        Uri.parse(('http://${Url.ip}/HhcApi/api/Employee/ModifyEmployee')),
         body: {
           'eid': obj.eid.toString(),
           'Fname': FnameController.text,
@@ -212,8 +227,11 @@ class _UpdateEmpState extends State<UpdateEmp> {
           'OrgName': obj.orgName,
           'Department': obj.department,
           'Status': "Accepted",
-          'NofComApm': 0.toString(),
-          'Raitings': 0.toString()
+          'Shift': selectedshift,
+          'Raitings': 0.toString(),
+          'Lat': widget.locationsObj.lat,
+          'Long': widget.locationsObj.long,
+          'Radius': widget.locationsObj.radius,
         },
       );
       if (res.statusCode == 200) {
@@ -231,33 +249,25 @@ class _UpdateEmpState extends State<UpdateEmp> {
     }
   }
 
-  Future<void> sendSchedule() async {
-    var res = await http.post(
-      Uri.parse(('http://${Url.ip}/HhcApi/api/Login/AddEmpSchedule')),
-      body: {
-        'eid': obj.eid.toString(),
-        'Fname': FnameController.text,
-        'Lname': LnameController.text,
-        'OrgName': obj.orgName,
-        'Dep': obj.department,
-        'Shift': selectedshift,
-        'noOfpndApnt': 0.toString(),
-        'Ratings': 0.toString(),
-        'date': 'NoDate',
-        'timeslot': 'S0',
-      },
-    );
-    if (res.statusCode == 200) {
-      print(res.body);
-    }
-    // else {
-    //   setState(() {
-    //     error = true;
-    //     msg = "Error during sending data";
-    //     sending = false;
-    //   });
-    // }
-  }
+  // Future<void> sendSchedule() async {
+  //   var res = await http.post(
+  //     Uri.parse(('http://${Url.ip}/HhcApi/api/Employee/AddEmpSchedule')),
+  //     body: {
+  //       'eid': obj.eid.toString(),
+  //       'Fname': FnameController.text,
+  //       'Lname': LnameController.text,
+  //       'OrgName': obj.orgName,
+  //       'Dep': obj.department,
+  //       'Shift': selectedshift,
+  //       'Ratings': 0.toString(),
+  //       'date': 'NoDate',
+  //       'timeslot': 'S0',
+  //     },
+  //   );
+  //   if (res.statusCode == 200) {
+  //     print(res.body);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -311,13 +321,81 @@ class _UpdateEmpState extends State<UpdateEmp> {
                               ),
                             ),
                           ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            child: TextField(
-                              controller: AgeController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Age',
+                          Card(
+                            child: Container(
+                              width: 350,
+                              height: 75,
+                              child: Column(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 12,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 25,
+                                      ),
+                                      Text(
+                                        'Location:',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.teal,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 50,
+                                      ),
+                                      Container(
+                                        height: 60,
+                                        //width: 100,
+                                        padding: EdgeInsets.all(10),
+                                        child: TextButton(
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.blue),
+                                            shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(30.0),
+                                              ),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Open Map',
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                              SizedBox(
+                                                width: 3,
+                                              ),
+                                              Icon(
+                                                Icons.location_on_outlined,
+                                                color: Colors.white,
+                                              ),
+                                            ],
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => EmpMap(
+                                                  obj: widget.obj,
+                                                  locationsObj: locationsObj,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -361,7 +439,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                         ],
                                       ),
                                       SizedBox(
-                                        width: 100,
+                                        width: 60,
                                       ),
                                       Row(
                                         children: [
@@ -387,6 +465,16 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                     ],
                                   ),
                                 ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: TextField(
+                              controller: AgeController,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Age',
                               ),
                             ),
                           ),
@@ -440,30 +528,10 @@ class _UpdateEmpState extends State<UpdateEmp> {
                               ),
                             ),
                           ),
-                          // Container(
-                          //   padding: EdgeInsets.all(10),
-                          //   child: TextField(
-                          //     controller: UsernameController,
-                          //     decoration: InputDecoration(
-                          //       border: OutlineInputBorder(),
-                          //       labelText: 'Username',
-                          //     ),
-                          //   ),
-                          // ),
-                          // Container(
-                          //   padding: EdgeInsets.all(10),
-                          //   child: TextField(
-                          //     controller: PasswordController,
-                          //     decoration: InputDecoration(
-                          //       border: OutlineInputBorder(),
-                          //       labelText: 'Password',
-                          //     ),
-                          //   ),
-                          // ),
                           Row(
                             children: [
                               SizedBox(
-                                width: 30,
+                                width: 15,
                               ),
                               Row(
                                 children: [
@@ -487,7 +555,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                 ],
                               ),
                               SizedBox(
-                                width: 20,
+                                width: 18,
                               ),
                               Row(
                                 children: [
@@ -511,7 +579,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
                                 ],
                               ),
                               SizedBox(
-                                width: 20,
+                                width: 18,
                               ),
                               Row(
                                 children: [
@@ -558,7 +626,7 @@ class _UpdateEmpState extends State<UpdateEmp> {
                               ),
                               onPressed: () {
                                 sendData();
-                                sendSchedule();
+                                //sendSchedule();
                                 setState(
                                   () {
                                     Navigator.push(
